@@ -6,6 +6,7 @@ package syntaxtree;
 
 import com.company.Type;
 import com.company.TypeCheckVisitor;
+import visitor.GJVisitor;
 import visitor.Visitor;
 
 import java.util.Enumeration;
@@ -68,7 +69,7 @@ public class NodeToken implements Node {
    public void accept(Visitor v) {
       v.visit(this);
    }
-   public <R,A> R accept(TypeCheckVisitor v, Type argu) {
+   public <R,A> R accept(GJVisitor<R, A> v, A argu) {
       return v.visit(this,argu);
    }
    public <R> R accept(visitor.GJNoArguVisitor<R> v) {

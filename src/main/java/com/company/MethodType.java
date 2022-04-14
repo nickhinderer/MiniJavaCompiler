@@ -1,16 +1,20 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MethodType extends Type {
     private Map<Symbol, Type> parameters;
+    private List<Symbol> order;
     private Map<Symbol, Type> variables;
     private Type returnType;
 
     public MethodType(Type returnType) {
         this.returnType = returnType;
         parameters = new HashMap<>();
+        order = new ArrayList<>();
         variables = new HashMap<>();
     }
 
@@ -20,6 +24,7 @@ public class MethodType extends Type {
             if (variables.get(p) != null)
                 return false;
             parameters.put(p, parameterType);
+            order.add(p);
             return true;
         } else return false;
         //don't forget to also check in variables too (even though the type checking document has an error and says duplicates are allowed)
@@ -47,5 +52,24 @@ public class MethodType extends Type {
     public Type getVariableType(String variableName) {
         Symbol v = Symbol.symbol(variableName);
         return variables.get(v);
+    }
+
+    public Type type(String name) {
+        Symbol id = Symbol.symbol(name);
+        if (parameters.containsKey(id))
+            return parameters.get(id);
+        if (variables.containsKey(id))
+            return variables.get(id);
+        return null;
+    }
+
+    public String parameter(int index) {
+        if (index >= order.size())
+            return null;
+        return order.get(index).toString();
+    }
+
+    public int parameterCount() {
+        return parameters.size();
     }
 }

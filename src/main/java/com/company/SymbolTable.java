@@ -7,11 +7,14 @@ import java.util.Set;
 class Context {
     public String className;
     public String methodName;
-    public boolean variable;
-    public boolean parameter;
-    public boolean field;
+//    public boolean variable;
+//    public boolean parameter;
+//    public boolean field;
+
+//    public boolean _class;
+    public boolean method;
     public Context() {
-        variable = false; parameter = false; field = false;
+        /*variable = false; parameter = false; field = false; _class = false;*/ method = false;
     }
     //public final static SymbolTable symbolTable;
 }
@@ -67,8 +70,10 @@ public class SymbolTable {
 //        return table.getVariableTypeInfo(state.className, state.methodName, variableName);
 //    }
 
-    public ClassType getFullClassType() {
-        return null;
+    public ClassType getFullClassType(String className) {
+        return table.type(className);
+        //just remember the flow of setting up dummy skeleton methods and fililng in leater like he said, establish that workflow. and also remember that  one helper method from class
+        //memory layout too
         //search inheritance tree and add appropriate methods, have this in symbolTable, and vapor initialize, covert classes to vapor classes
     }
     public String getMainClassName() {
@@ -87,15 +92,35 @@ public class SymbolTable {
 //        return null;
     }
 
-    public Type type(String name) {
-        if (state.field)
-            return table.getFieldTypeInfo(state.className, name);
-        if (state.variable)
-            return table.getVariableTypeInfo(state.className, state.methodName, name);
-        if (state.parameter)
-            return table.getParameterTypeInfo(state.className, state.methodName, name);
-        return null;
+//    public Type type(String name) {
+//        if (state.method)
+//            return table.getFieldTypeInfo(state.className, name);
+//        if (state._class)
+//            return table.getVariableTypeInfo(state.className, state.methodName, name);
+//        if (state.parameter)
+//            return table.getParameterTypeInfo(state.className, state.methodName, name);
+//        return table.getClassType(name);
+//        //return null;
+//    }
+
+
+
+    public boolean subType(Type t1, Type t2) {
+        if (t1.type == TYPE.PRIMITIVE && t2.type == TYPE.PRIMITIVE)
+            if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
+                return false;
+        return true;
     }
+//    public Type type(String name) {
+//        if (state.field)
+//            return table.getFieldTypeInfo(state.className, name);
+//        if (state.variable)
+//            return table.getVariableTypeInfo(state.className, state.methodName, name);
+//        if (state.parameter)
+//            return table.getParameterTypeInfo(state.className, state.methodName, name);
+//        return table.getClassType(name);
+//        //return null;
+//    }
     public Set<String> getClassNames() {
         table.getClassNames();
         HashSet<String> classNames = new HashSet();
@@ -104,4 +129,62 @@ public class SymbolTable {
         return classNames;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+//    public Type type(String name) {
+//        Type type;
+//        if (state.method) {
+//            type = table.getVariableTypeInfo(state.className, state.methodName, name);
+//            if (type != null)
+//                return type;
+//            type = table.getParameterTypeInfo(state.className, state.methodName, name);
+//            if (type != null)
+//                return type;
+//        }
+//        type = table.getFieldTypeInfo(state.className, name);
+//        if (type != null)
+//            return type;
+//        return table.getClassType(name);
+////        if (type != null)
+////            return type;
+//
+////        return null;
+//    }
+
+    public Type typeParamaterORVariable(String name) {
+        Type type;
+        if (state.method) {
+            type = table.type(state.className, state.methodName, name); //search parameters and variables in current method
+            if (type != null)
+                return type;
+        }
+        return null;
+//        type = table.type(state.className, name); //no matching var/param; search methods in current class
+//        if (type != null)
+//            return type;
+//        type = table.type(name); //no matching method; search classes in global, returns null if no matching classes are found
+//        return type;
+    }
+
+    public MethodType typeMethod(String methodName) {
+        return table.type(state.className, methodName); //no matching var/param; search methods in current class
+//        type = table.type(name); //no matching method; search classes in global, returns null if no matching classes are found
+//        return type;
+    }
+
+    public Type typeClass(String className) {
+        return getFullClassType(className); //no matching var/param; search methods in current class
+//        type = table.type(name); //no matching method; search classes in global, returns null if no matching classes are found
+//        return type;
+    }
 }

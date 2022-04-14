@@ -102,4 +102,22 @@ public class Global {
         return classes;
     }
 
+    public Type type(String className, String methodName, String name) {
+        Symbol c = Symbol.symbol(className);
+        if (classes.get(c) == null)
+            return null;
+        return classes.get(c).type(methodName, name); //parameter or variable
+    }
+
+    public MethodType type(String className, String methodName) {
+        Symbol c = Symbol.symbol(className);
+        if (classes.get(c) == null)
+            return null;
+        return classes.get(c).type(methodName);
+    }
+
+    public ClassType type(String className) {
+        Symbol c = Symbol.symbol(className);
+        return classes.get(c);
+    }
 }

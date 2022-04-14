@@ -17,6 +17,7 @@ public class ClassType extends Type {
         methods = new HashMap<>();
         fields = new HashMap<>();
         this.main = false;
+        this.type = TYPE.CLASS;
     }
 
     public ClassType(String className, String parentName, boolean main) {
@@ -26,6 +27,7 @@ public class ClassType extends Type {
         methods = new HashMap<>();
         fields = new HashMap<>();
         this.main = main;
+        this.type = TYPE.CLASS;
     }
 
     public String className() {
@@ -102,5 +104,22 @@ public class ClassType extends Type {
 
     public int getFieldCount() {
         return fields.size();
+    }
+
+    public Type type(String methodName, String name) {
+        Symbol m = Symbol.symbol(methodName);
+        if (methods.get(m) == null)
+            return null;
+        return methods.get(m).type(name);
+    }
+
+    public MethodType type(String methodName) {
+        Symbol m = Symbol.symbol(methodName);
+        return methods.get(m);
+    }
+
+    public MethodType typeMethod(String methodName) {
+        Symbol m = Symbol.symbol(methodName);
+        return methods.get(m);
     }
 }

@@ -20,7 +20,8 @@ public class SymbolTableVisitor<R,A> extends GJDepthFirst<R,A> {
     public R visit(MainClass n, A/*SymbolTable (and return void)*/ argu) { //come back adn rewrite with new symboltable
         String className = n.f1.f0.tokenImage;
         ClassType classType = new ClassType(className, null, true);
-        symbolTable.addClass(className, classType);
+        if (!symbolTable.addClass(className, classType))
+            throw new TypeCheckException("Redefinition of of class '" + className + "'");
         currentClass = className;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -47,7 +48,8 @@ public class SymbolTableVisitor<R,A> extends GJDepthFirst<R,A> {
     public R visit(ClassDeclaration n, A argu) {
         String className = n.f1.f0.tokenImage;
         ClassType classType = new ClassType(className, null);
-        symbolTable.addClass(className, classType);
+        if (!symbolTable.addClass(className, classType))
+            throw new TypeCheckException("Redefinition of of class '" + className + "'");
         currentClass = className;
         R _ret = null;
         n.f0.accept(this, argu);
@@ -67,7 +69,8 @@ public class SymbolTableVisitor<R,A> extends GJDepthFirst<R,A> {
         String className = n.f1.f0.tokenImage;
         String parentName = n.f3.f0.tokenImage;
         ClassType classType = new ClassType(className, parentName);
-        symbolTable.addClass(className, classType);
+        if (!symbolTable.addClass(className, classType))
+            throw new TypeCheckException("Redefinition of of class '" + className + "'");
         currentClass = className;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -88,7 +91,9 @@ public class SymbolTableVisitor<R,A> extends GJDepthFirst<R,A> {
         String methodName = n.f2.f0.tokenImage;
         Type returnType = getType(n.f1.f0);
         MethodType methodType = new MethodType(returnType);
-        symbolTable.addMethod(currentClass, methodName, methodType);
+        if (!symbolTable.addMethod(currentClass, methodName, methodType))
+            throw new TypeCheckException("Redefinition of of method '" + methodName + "' in class '" + currentClass + "'");
+
         currentMethod = methodName;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);

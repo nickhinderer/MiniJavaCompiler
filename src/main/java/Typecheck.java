@@ -1,6 +1,7 @@
 import com.company.SymbolTable;
 //import TypeCheck.*;
 import com.company.SymbolTableVisitor;
+import com.company.TypeCheckException;
 import com.company.TypeCheckVisitor;
 import syntaxtree.*;
 import visitor.*;
@@ -33,15 +34,18 @@ public class Typecheck {
 //			SymbolTable symtab = ts2.table.getSymbolTable();
 			SymbolTableVisitor sv = new SymbolTableVisitor();
 			root.accept(sv, null);
-			TypeCheckVisitor tcv = new TypeCheckVisitor(sv.getSymbolTable());
-			root.accept(tcv, null);
-			SymbolTable symbolTable = sv.getSymbolTable();
+			TypeCheckVisitor tcv = new TypeCheckVisitor();
+			var a = root.accept(tcv, sv.getSymbolTable());
+			if (a == null)
+				throw new TypeCheckException();
+			//SymbolTable symbolTable = sv.getSymbolTable();
 			System.out.println("Program type checked successfully");
 			
 		} catch (Exception e) {
 
 			//e.printStackTrace();
-			//System.out.println(e.getMessage());
+
+			System.err.print(e.getMessage());
 			System.out.println("Type error");
 		}
 	}

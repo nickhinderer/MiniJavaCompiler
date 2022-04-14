@@ -30,7 +30,7 @@ public class TestTypeCheck {
             root = new MiniJavaParser(f).Goal();
             SymbolTableVisitor sv = new SymbolTableVisitor();
             root.accept(sv, null);
-            TypeCheckVisitor tcv = new TypeCheckVisitor(sv.getSymbolTable());
+            TypeCheckVisitor tcv = new TypeCheckVisitor();
             root.accept(tcv, null);
             SymbolTable symbolTable = sv.getSymbolTable();
             MiniJavaParser.ReInit(f);
