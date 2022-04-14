@@ -20,6 +20,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         this.symbolTable = symbolTable;
     }
 
+
+
 //    private static Type type(Context c, final String name) {
 //        if (c.field)
 //            return symbolTable.getFieldTypeInfo(c.className, name);
@@ -29,6 +31,24 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 //            return symbolTable.getVariableTypeInfo(c.className, c.methodName, name);
 //        return null;
 //    }
+
+
+
+
+    public R visit(ClassDeclaration n, A argu) {
+        R _ret=null;
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        n.f2.accept(this, argu);
+        n.f3.accept(this, argu);
+        n.f4.accept(this, argu);
+        n.f5.accept(this, argu);
+        return _ret;
+    }
+
+
+
+
 
     public Type visit(PrintStatement n, SymbolTable c) {
         Type _ret=null;
@@ -73,7 +93,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(Identifier n, SymbolTable c) {
-        return type(c, n.f0.tokenImage);
+        return c.type(n.f0.tokenImage);
     }
 
     public Type visit(VarDeclaration n, SymbolTable c) {

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Context {
+class Context {
     public String className;
     public String methodName;
     public boolean variable;
@@ -48,22 +48,26 @@ public class SymbolTable {
         //look in table in Global and return type (this is different from classTypes that are only associated with references inside of methods or as a field, those simply have the name which references a class in table otherwise it is type error, remember, no nested classes or global methods etc. just make something that works for minijava while knowing the universal case/solution too
     }
 
-    public Type getMethodTypeInfo(String className, String methodName) {
-        return table.getMethodTypeInfo(className, methodName);
-    }
+//    public Type getMethodTypeInfo(String methodName) {
+//        return table.getMethodTypeInfo(state.className, methodName);
+//    }
+//
+//    public Type getFieldTypeInfo(String fieldName) {
+//        return table.getFieldTypeInfo(state.className, fieldName);
+//    }
+//
+//    public Type getParameterTypeInfo(String parameterName) {
+//        return table.getParameterTypeInfo(state.className, state.methodName, parameterName);
+//    }
+//
+//    public Type getVariableTypeInfo(String variableName) {
+//        return table.getVariableTypeInfo(state.className, state.methodName, variableName);
+//    }
 
-    public Type getFieldTypeInfo(String className, String fieldName) {
-        return table.getFieldTypeInfo(className, fieldName);
+    public ClassType getFullClassType() {
+        return null;
+        //search inheritance tree and add appropriate methods, have this in symbolTable, and vapor initialize, covert classes to vapor classes
     }
-
-    public Type getParameterTypeInfo(String className, String methodName, String parameterName) {
-        return table.getParameterTypeInfo(className, methodName, parameterName);
-    }
-
-    public Type getVariableTypeInfo(String className, String methodName, String variableName) {
-        return table.getVariableTypeInfo(className, methodName, variableName);
-    }
-
     public String getMainClassName() {
         for (var entry : table.getClassTypes().entrySet()) { //for (Map.Entry<Symbol, ClassType> class_t : table.getClassTypes().entrySet()) {
             if (entry.getValue().isMain())
@@ -80,6 +84,15 @@ public class SymbolTable {
 //        return null;
     }
 
+    public Type type(String name) {
+        if (state.field)
+            return table.getFieldTypeInfo(state.className, name);
+        if (state.variable)
+            return table.getVariableTypeInfo(state.className, state.methodName, name);
+        if (state.parameter)
+            return table.getParameterTypeInfo(state.className, state.methodName, name);
+        return null;
+    }
     public Set<String> getClassNames() {
         table.getClassNames();
         HashSet<String> classNames = new HashSet();

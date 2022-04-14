@@ -3,7 +3,7 @@ package com.company;
 import syntaxtree.*;
 import visitor.GJDepthFirst;
 
-public class SymbolTableVisitor/*<void, Context>*/ extends GJDepthFirst<Void ,Context> {
+public class SymbolTableVisitor/*<void, Context>*/ extends GJDepthFirst<Void , SymbolTable> {
 
 
     private static SymbolTable symbolTable = new SymbolTable();
@@ -17,7 +17,7 @@ public class SymbolTableVisitor/*<void, Context>*/ extends GJDepthFirst<Void ,Co
 
 
     @Override
-    public Void visit(MainClass n, Context c) {
+    public Void visit(MainClass n, SymbolTable c) { //come back adn rewrite with new symboltable
         String className = n.f1.f0.tokenImage;
         ClassType classType = new ClassType(className, null, true);
         symbolTable.addClass(className, classType);
