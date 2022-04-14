@@ -4,12 +4,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+public class Context {
+    public String className;
+    public String methodName;
+    public boolean variable;
+    public boolean parameter;
+    public boolean field;
+    //public final static SymbolTable symbolTable;
+}
+
 public class SymbolTable {
     //beginScope, enterScope, etc. begin scope. this. whiteboard. etc.
     private static Global table;
+    public Context state;
 
     public SymbolTable() {
         table = new Global();
+        state = new Context();
     }
 
     public boolean addClass(String className, ClassType classType) {
