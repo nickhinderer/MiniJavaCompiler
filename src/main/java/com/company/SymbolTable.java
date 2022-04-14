@@ -10,6 +10,9 @@ class Context {
     public boolean variable;
     public boolean parameter;
     public boolean field;
+    public Context() {
+        variable = false; parameter = false; field = false;
+    }
     //public final static SymbolTable symbolTable;
 }
 

@@ -35,14 +35,18 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 
 
 
-    public R visit(ClassDeclaration n, A argu) {
-        R _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
-        n.f3.accept(this, argu);
-        n.f4.accept(this, argu);
-        n.f5.accept(this, argu);
+    public Type visit(ClassDeclaration n, SymbolTable st) {
+        Type _ret = new TypeChecksType();
+        st.state.className = n.f1.f0.tokenImage;
+        n.f0.accept(this, st);
+        n.f1.accept(this, st);
+        st.state.field = true;
+        n.f2.accept(this, st);
+        st.state.field = false;
+        n.f3.accept(this, st);
+        n.f4.accept(this, st);
+        n.f5.accept(this, st);
+        //if some typechecking rule for classes doesn't pass, return null
         return _ret;
     }
 

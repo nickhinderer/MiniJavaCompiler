@@ -3,7 +3,7 @@ package com.company;
 import syntaxtree.*;
 import visitor.GJDepthFirst;
 
-public class SymbolTableVisitor/*<void, Context>*/ extends GJDepthFirst<Void , SymbolTable> {
+public class SymbolTableVisitor<R,A> extends GJDepthFirst<R,A> {
 
 
     private static SymbolTable symbolTable = new SymbolTable();
@@ -17,29 +17,29 @@ public class SymbolTableVisitor/*<void, Context>*/ extends GJDepthFirst<Void , S
 
 
     @Override
-    public Void visit(MainClass n, SymbolTable c) { //come back adn rewrite with new symboltable
+    public R visit(MainClass n, A/*SymbolTable (and return void)*/ argu) { //come back adn rewrite with new symboltable
         String className = n.f1.f0.tokenImage;
         ClassType classType = new ClassType(className, null, true);
         symbolTable.addClass(className, classType);
         currentClass = className;
-        n.f0.accept(this, c);
-        n.f1.accept(this, c);
-        n.f2.accept(this, c);
-        n.f3.accept(this, c);
-        n.f4.accept(this, c);
-        n.f5.accept(this, c);
-        n.f6.accept(this, c);
-        n.f7.accept(this, c);
-        n.f8.accept(this, c);
-        n.f9.accept(this, c);
-        n.f10.accept(this, c);
-        n.f11.accept(this, c);
-        n.f12.accept(this, c);
-        n.f13.accept(this, c);
-        n.f14.accept(this, c);
-        n.f15.accept(this, c);
-        n.f16.accept(this, c);
-        n.f17.accept(this, c);
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        n.f2.accept(this, argu);
+        n.f3.accept(this, argu);
+        n.f4.accept(this, argu);
+        n.f5.accept(this, argu);
+        n.f6.accept(this, argu);
+        n.f7.accept(this, argu);
+        n.f8.accept(this, argu);
+        n.f9.accept(this, argu);
+        n.f10.accept(this, argu);
+        n.f11.accept(this, argu);
+        n.f12.accept(this, argu);
+        n.f13.accept(this, argu);
+        n.f14.accept(this, argu);
+        n.f15.accept(this, argu);
+        n.f16.accept(this, argu);
+        n.f17.accept(this, argu);
         return null;
     }
 
