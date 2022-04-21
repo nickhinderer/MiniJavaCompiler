@@ -16,6 +16,11 @@ public class MethodType extends Type {
         parameters = new HashMap<>();
         order = new ArrayList<>();
         variables = new HashMap<>();
+        this.type = TYPE.METHOD;
+    }
+
+    public List<Symbol> getOrder() {
+        return order;
     }
 
     public boolean addParameter(String parameterName, Type parameterType) {
@@ -71,5 +76,21 @@ public class MethodType extends Type {
 
     public int parameterCount() {
         return parameters.size();
+    }
+
+
+    public boolean equals(MethodType other) {
+        if (this.parameterCount() != other.parameterCount())
+            return false;
+        for (int i = 0; i < parameterCount(); i++) {
+            if (!parameters.get(order.get(i)).equals(other.parameters.get(other.order.get(i)))) {
+                return false;
+            }
+            if (!returnType.equals(other.returnType))
+                return false;
+        }
+
+        return true;
+
     }
 }

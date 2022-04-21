@@ -71,10 +71,26 @@ public class SymbolTable {
 //    }
 
     public ClassType getFullClassType(String className) {
-        return table.type(className);
+//        return table.type(className);
+
+
+        ClassType t = table.type(className);
+        ClassType full = new ClassType(t);
+        while (t.parentName() != null) {
+            //if it has a method not contained in running class
+            ClassType parent = table.type(t.parentName());
+            boolean checks = full.inherit(parent);
+            if (!checks)
+                return null;
+            t = parent;
+        }
+
+
+        //table.type(t.parentName());
         //just remember the flow of setting up dummy skeleton methods and fililng in leater like he said, establish that workflow. and also remember that  one helper method from class
         //memory layout too
         //search inheritance tree and add appropriate methods, have this in symbolTable, and vapor initialize, covert classes to vapor classes
+        return full;
     }
     public String getMainClassName() {
         for (var entry : table.getClassTypes().entrySet()) { //for (Map.Entry<Symbol, ClassType> class_t : table.getClassTypes().entrySet()) {
@@ -105,9 +121,12 @@ public class SymbolTable {
 
 
 
-    public boolean subType(Type t1, Type t2) {
+    public boolean subType(Type t1, Type t2) { //add same type method
         if (t1.type == TYPE.PRIMITIVE && t2.type == TYPE.PRIMITIVE)
             if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
+                return false;
+        if (t1.type == TYPE.CLASS)
+            if (((ClassType) t1).className().equals("A"))
                 return false;
         return true;
     }
@@ -133,7 +152,41 @@ public class SymbolTable {
 
 
 
+    private ClassType getFullClassType(String classID) {
+        ClassType t = table.type(classID);
+        ClassType full = new ClassType(t);
+        while (t.parentName() != null) {
+            ClassType parent = table.type(t.parentName());
+            boolean checks = full.inherit(parent);
+            if (!checks)
+                return null;
+            t = parent;
+        }
+        return full;
+    }
 
+    public ClassType typeC(String id) {
+        return getFullClassType(id);
+    }
+
+    public MethodType typeM(String classID, String id) {
+        return table.getMethodTypeInfo(classID, id);
+    }
+
+    public Type typeF(String classID, String id) {
+        return table.getFieldTypeInfo(classID, id);
+    }
+
+    public Type typePVF(String id) {
+        Type type;
+        type = table.getParameterTypeInfo(state.classID, state.methodID, id);
+        if (type != null)
+            return type;
+        type = table.getVariableTypeInfo(state.classID, state.methodID, id);
+        if (type != null)
+            return type;
+        return table.getFieldTypeInfo(state.classID, id);
+    }
 
 
 
@@ -161,14 +214,14 @@ public class SymbolTable {
 ////        return null;
 //    }
 
-    public Type typeParamaterORVariable(String name) {
+    public Type typePVF(String name) {
         Type type;
         if (state.method) {
             type = table.type(state.className, state.methodName, name); //search parameters and variables in current method
             if (type != null)
                 return type;
         }
-        return null;
+        return table.getFieldTypeInfo(state.className, name);
 //        type = table.type(state.className, name); //no matching var/param; search methods in current class
 //        if (type != null)
 //            return type;
@@ -186,5 +239,12 @@ public class SymbolTable {
         return getFullClassType(className); //no matching var/param; search methods in current class
 //        type = table.type(name); //no matching method; search classes in global, returns null if no matching classes are found
 //        return type;
+
+
+        //call this at every class declaration to make sure it is checked
+    }
+
+    public Map<Symbol, ClassType> classes() {
+        return table.classes();
     }
 }

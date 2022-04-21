@@ -4,6 +4,7 @@ import com.company.SymbolTableVisitor;
 import com.company.TypeCheckException;
 import com.company.TypeCheckVisitor;
 import syntaxtree.*;
+import vapor.VaporVisitor;
 import visitor.*;
 
 public class Typecheck {
@@ -39,13 +40,14 @@ public class Typecheck {
 			if (a == null)
 				throw new TypeCheckException();
 			//SymbolTable symbolTable = sv.getSymbolTable();
+			VaporVisitor v = new VaporVisitor(sv.getSymbolTable());
+			root.accept(v, null);
 			System.out.println("Program type checked successfully");
-			
 		} catch (Exception e) {
 
-			//e.printStackTrace();
-
-			System.err.print(e.getMessage());
+			e.printStackTrace();
+			if (e.getMessage() != null)
+				System.err.print(e.getMessage());
 			System.out.println("Type error");
 		}
 	}

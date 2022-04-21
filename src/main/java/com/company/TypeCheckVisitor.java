@@ -5,58 +5,24 @@ import syntaxtree.ArrayType;
 import visitor.GJDepthFirst;
 
 import java.util.Enumeration;
-
-
-//class Context {
-//    public String className;
-//    public String methodName;
-//    public boolean variable;
-//    public boolean parameter;
-//    public boolean field;
-//}
-
 public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 
-    //private static SymbolTable symbolTable;
-
     public TypeCheckVisitor() {
-        //this.symbolTable = symbolTable;
     }
-
-
-
-//    private static Type type(Context c, final String name) {
-//        if (c.field)
-//            return symbolTable.getFieldTypeInfo(c.className, name);
-//        if (c.parameter)
-//            return symbolTable.getParameterTypeInfo(c.className, c.methodName, name);
-//        if (c.variable)
-//            return symbolTable.getVariableTypeInfo(c.className, c.methodName, name);
-//        return null;
-//    }
-
-
     public Type visit(MainClass n, SymbolTable st) {
         Type _ret = new TypeChecksType();
         st.state.className = n.f1.f0.tokenImage;
-        n.f0.accept(this, st);
-        //Type s = n.f1.accept(this, st);
-        //n.f11.accept(this, st);
-//        st.state.field = true;
-        n.f14.accept(this, st);
-//        st.state.field = false;
+//        n.f14.accept(this, st);
+        st.state.methodName = "main";
+        st.state.method = true;
         if (n.f15.accept(this, st) == null)
             return null;
-
+        st.state.method = false;
         return _ret;
     }
 
     public Type visit(ClassDeclaration n, SymbolTable st) {
         st.state.className = n.f1.f0.tokenImage;
-//        n.f1.accept(this, st);
-//        st.state.field = true;
-//        st.state.field = false;
-//        n.f3.accept(this, st);
         if (n.f4.accept(this, st) == null)
             return null;
         //if some typechecking rule for classes doesn't pass, return null
@@ -67,7 +33,6 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         st.state.className = n.f1.f0.tokenImage;
         n.f1.accept(this, st);
         n.f3.accept(this, st);
-//        n.f5.accept(this, st);
         if (n.f6.accept(this, st) == null)
             return null;
         return new TypeChecksType();
@@ -78,12 +43,6 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         st.state.method = true;
         n.f1.accept(this, st);
         n.f2.accept(this, st);
-//        st.state.parameter = true;
-//        n.f4.accept(this, st);
-//        st.state.parameter = false;
-//        st.state.variable = true;
-//        n.f7.accept(this, st);
-//        st.state.variable = false;
         if (n.f8.accept(this, st) == null)
             return null;
         Type t = n.f10.accept(this, st); //also check and make sure declared and actual return type match
@@ -100,8 +59,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 
 
     public Type visit(PrintStatement n, SymbolTable st) {
-        Type t1 = n.f2.accept(this, st);
-        if (t1 == null)
+        Type t = n.f2.accept(this, st);
+        if (!isInt(t))
             return null;
         return new TypeChecksType();
     }
@@ -157,7 +116,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(Identifier n, SymbolTable st) {
-        return st.typeParamaterORVariable(n.f0.tokenImage);
+        return st.typePVF(n.f0.tokenImage);
     }
 
     public Type visit(VarDeclaration n, SymbolTable st) {
@@ -178,12 +137,16 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 
     public Type visit(AssignmentStatement n, SymbolTable st) {
         Type t1 = n.f0.accept(this, st);
-        if (t1 == null || t1.type != TYPE.PRIMITIVE || !((PrimitiveType) t1).subType.equals("int"))
-            return null;
         Type t2 = n.f2.accept(this, st);
-        if (t2 == null || t2.type != TYPE.PRIMITIVE || !((PrimitiveType) t2).subType.equals("int"))
+        if (t1 == null || t2 == null)
             return null;
-            return new TypeChecksType();
+        if (t2.type != t1.type)
+            return null;
+        if (t1.type == TYPE.PRIMITIVE)
+            if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
+                return null;
+        //handle classtype (call subtype) and arraytype too
+        return new TypeChecksType();
     }
 
     public Type visit(Statement n, SymbolTable st) {
@@ -210,7 +173,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(MessageSend n, SymbolTable st) {
-        ClassType c = (ClassType) n.f0.accept(this, st);
+        String className = ((ClassType) n.f0.accept(this, st)).className();
+        ClassType c = st.getFullClassType(className);
         MethodType m = c.typeMethod(n.f2.f0.tokenImage);
         boolean checks = true;
         if ( n.f4.present() )
@@ -326,6 +290,14 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         if (t.type != TYPE.PRIMITIVE)
             return false;
         if (!((PrimitiveType) t).subType.equals("int"))
+            return false;
+        return true;
+    }
+
+    private boolean isArray(Type t) {
+        if (t == null)
+            return false;
+        if (t.type != TYPE.ARRAY)
             return false;
         return true;
     }
@@ -704,11 +676,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f2 -> "}"
      */
     public Type visit(Block n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        return _ret;
+        return n.f1.accept(this, st);
     }
 
     /**
@@ -825,11 +793,11 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f2 -> PrimaryExpression()
      */
     public Type visit(AndExpression n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        return _ret;
+        Type t1 = n.f0.accept(this, st);
+        Type t2 = n.f2.accept(this, st);
+        if (isBoolean(t1) && isBoolean(t2))
+            return t1;
+        return null;
     }
 
     /**
@@ -891,12 +859,11 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f3 -> "]"
      */
     public Type visit(ArrayLookup n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        n.f3.accept(this, st);
-        return _ret;
+        Type t1 = n.f0.accept(this, st);
+        Type t2 = n.f2.accept(this, st);
+        if (!isArray(t1) || !isInt(t2))
+            return null;
+        return t2;
     }
 
     /**
@@ -905,11 +872,10 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f2 -> "length"
      */
     public Type visit(ArrayLength n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        return _ret;
+        Type t = n.f0.accept(this, st);
+        if (!isArray(t))
+            return null;
+        return new PrimitiveType("int");
     }
 
     /**
@@ -1018,13 +984,10 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f4 -> "]"
      */
     public Type visit(ArrayAllocationExpression n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        n.f3.accept(this, st);
-        n.f4.accept(this, st);
-        return _ret;
+        Type t = n.f3.accept(this, st);
+        if (!isInt(t))
+            return null;
+        return new com.company.ArrayType();
     }
 
     /**
@@ -1043,10 +1006,10 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f1 -> Expression()
      */
     public Type visit(NotExpression n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        return _ret;
+        Type t = n.f1.accept(this, st);
+        if (!isBoolean(t))
+            return null;
+        return t;
     }
 
     /**

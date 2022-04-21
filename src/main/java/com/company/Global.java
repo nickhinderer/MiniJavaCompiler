@@ -120,4 +120,9 @@ public class Global {
         Symbol c = Symbol.symbol(className);
         return classes.get(c);
     }
+
+    public Map<Symbol, ClassType> classes() {
+        return classes;
+    }
+
 }

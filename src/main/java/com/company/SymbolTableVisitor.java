@@ -41,7 +41,15 @@ public class SymbolTableVisitor<R, A> extends GJDepthFirst<R, A> {
         if (!symbolTable.addClass(className, classType))
             throw new TypeCheckException("Redefinition of of class '" + className + "'");
         currentClass = className;
+        String methodName = "main";
+        Type returnType = new PrimitiveType("void");
+        MethodType methodType = new MethodType(returnType);
+        if (!symbolTable.addMethod(currentClass, methodName, methodType))
+            throw new TypeCheckException("Redefinition of of method '" + methodName + "' in class '" + currentClass + "'");
+        currentMethod = methodName;
+        variable = true;
         n.f14.accept(this, argu);
+        variable = false;
         return null;
     }
 
