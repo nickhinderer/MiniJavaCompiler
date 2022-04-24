@@ -1,0 +1,12 @@
+//oracle: should fail
+class A {
+  
+  public static void main(String[] args) {
+    int a;
+    int b;  
+    boolean c;
+    { System.out.println(a+b); a = c + b; }
+  }
+  
+}
+

@@ -1,0 +1,17 @@
+//oracle: should fail
+class A {
+	public static void main(String[] args) {
+		B b;
+		int a;
+		b = new B();
+		a = b.method(10);
+		a = b.method(false);
+	}	
+}
+
+class B {
+
+	public int method(int a) {
+		return a;
+	}
+}

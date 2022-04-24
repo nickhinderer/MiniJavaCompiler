@@ -1,0 +1,8 @@
+//oracle: should pass 
+class Factorial{
+    public static void main(String[] a){
+				int a;
+				a = 1;
+        System.out.println(a);
+    }
+}
