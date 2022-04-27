@@ -63,7 +63,7 @@ public class SymbolTable2 {
             if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
                 return false;
         if (t1.type == TYPE.CLASS)
-            if (((ClassType) t1).className().equals("A"))
+            if (((ClassType) t1).classID().equals("A"))
                 return false;
         return true;
     }

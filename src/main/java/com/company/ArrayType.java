@@ -6,4 +6,9 @@ public class ArrayType extends Type {
         this.type = TYPE.ARRAY;
         this.length = -1;
     }
+
+    @Override
+    public boolean equals(Type other) {
+        return other.type == TYPE.ARRAY;
+    }
 }

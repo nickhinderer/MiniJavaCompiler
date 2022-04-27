@@ -15,7 +15,7 @@ public class Typecheck {
 			root = new MiniJavaParser(System.in).Goal();
 
 			PrettyPrinter<Void,String> pp = new PrettyPrinter<Void, String>();
-			//root.accept(pp, "");
+			root.accept(pp, "");
 
 //			SymbolTableVisit ts = new SymbolTableVisit();
 //			root.accept(ts, 0);
@@ -41,15 +41,19 @@ public class Typecheck {
 				throw new TypeCheckException();
 			//SymbolTable symbolTable = sv.getSymbolTable();
 			VaporVisitor v = new VaporVisitor(sv.getSymbolTable());
-			root.accept(v, null);
+			root.accept(v, sv.getSymbolTable());
 			System.out.println("Program type checked successfully");
 		} catch (Exception e) {
 
-			e.printStackTrace();
+//			e.printStackTrace();
 			if (e.getMessage() != null)
-				System.err.print(e.getMessage());
+				System.err.println(e.getMessage());
 			System.out.println("Type error");
 		}
 	}
+	//NOTE!! SPLIT UP INITIALIZE AND THAT STRING INTO A NEW CLASS THAT CALLS VAPOR VISITOR<, YOU NEED TO SEPARATE THOSE. T
+	//tomorrow go lie about that apartment and get it.reherase it 20 times, sound natural, kill it
+
+	//and bood job separating symbol table from type checker, now you can make hw3 separate from hw2
 }
 

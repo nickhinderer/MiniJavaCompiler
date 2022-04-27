@@ -28,6 +28,10 @@ public class Global {
         } else return false;
     }
 
+    public Map<Symbol, ClassType> getClasses() {
+        return classes;
+    }
+
     public boolean addMethod(String className, String methodName, MethodType methodType) {
         Symbol c = Symbol.symbol(className);
         if (classes.get(c) == null)
@@ -123,6 +127,10 @@ public class Global {
 
     public Map<Symbol, ClassType> classes() {
         return classes;
+    }
+
+    public void setClasses(Map<Symbol, ClassType> updated) {
+        classes = updated;
     }
 
 }

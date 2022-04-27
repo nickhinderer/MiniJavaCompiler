@@ -1,5 +1,7 @@
 package com.company;
 
+import vapor.VaporMethodType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ public class MethodType extends Type {
     private List<Symbol> order;
     private Map<Symbol, Type> variables;
     private Type returnType;
+    public VaporMethodType vapor;
 
     public MethodType(Type returnType) {
         this.returnType = returnType;
@@ -83,14 +86,30 @@ public class MethodType extends Type {
         if (this.parameterCount() != other.parameterCount())
             return false;
         for (int i = 0; i < parameterCount(); i++) {
-            if (!parameters.get(order.get(i)).equals(other.parameters.get(other.order.get(i)))) {
-                return false;
-            }
+//            if (!parameters.get(order.get(i)).equals(other.parameters.get(other.order.get(i))))             if (!parameters.get(order.get(i)).equals(other.parameters.get(other.order.get(i)))) {{
+//            if (!parameters.get(order.get(i)).equals(other.parameters.get(other.order.get(i)))) {
+            Type p1 = parameters.get(order.get(i));
+            Type p2 = other.parameters.get(other.order.get(i));
+            if (!p1.equals(p2))
+                    return false;
+//            }
             if (!returnType.equals(other.returnType))
                 return false;
         }
 
         return true;
 
+    }
+
+    @Override
+    public boolean equals(Type other) {
+       if (other.type != TYPE.METHOD)
+           return false;
+       else return this.equals((MethodType) other);
+    }
+
+    public boolean isPV(String id) {
+        Symbol pv = Symbol.symbol(id);
+        return parameters.containsKey(pv) || variables.containsKey(pv);
     }
 }

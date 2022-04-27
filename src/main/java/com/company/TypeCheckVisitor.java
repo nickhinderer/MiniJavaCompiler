@@ -11,9 +11,9 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
     public Type visit(MainClass n, SymbolTable st) {
         Type _ret = new TypeChecksType();
-        st.state.className = n.f1.f0.tokenImage;
+        st.state.classID = n.f1.f0.tokenImage;
 //        n.f14.accept(this, st);
-        st.state.methodName = "main";
+        st.state.methodID = "main";
         st.state.method = true;
         if (n.f15.accept(this, st) == null)
             return null;
@@ -22,7 +22,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(ClassDeclaration n, SymbolTable st) {
-        st.state.className = n.f1.f0.tokenImage;
+        st.state.classID = n.f1.f0.tokenImage;
         if (n.f4.accept(this, st) == null)
             return null;
         //if some typechecking rule for classes doesn't pass, return null
@@ -30,7 +30,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(ClassExtendsDeclaration n, SymbolTable st) {
-        st.state.className = n.f1.f0.tokenImage;
+        st.state.classID = n.f1.f0.tokenImage;
         n.f1.accept(this, st);
         n.f3.accept(this, st);
         if (n.f6.accept(this, st) == null)
@@ -39,16 +39,16 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(MethodDeclaration n, SymbolTable st) {
-        st.state.methodName = n.f2.f0.tokenImage;
+        st.state.methodID = n.f2.f0.tokenImage;
         st.state.method = true;
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
+//        Type declaredType = n.f1.accept(this, st);
+//        n.f2.accept(this, st);
         if (n.f8.accept(this, st) == null)
             return null;
         Type t = n.f10.accept(this, st); //also check and make sure declared and actual return type match
         if (t == null)
             return null;
-        if (!st.subType(st.typeMethod(st.state.methodName).getReturnType(), t))
+        if (!st.subType(st.typeM(st.state.classID, st.state.methodID).getReturnType(), t))
             return null;
         st.state.method=false;
         return new TypeChecksType();
@@ -112,6 +112,15 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(PrimaryExpression n, SymbolTable st) {
+//        switch (n.f0.which) {
+//            case 0:
+//                return new PrimitiveType("int");
+//            case 1:
+//            case 2:
+//                return new PrimitiveType("boolean");
+//            case 3:
+//
+//        }
         return n.f0.accept(this, st);
     }
 
@@ -173,9 +182,9 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(MessageSend n, SymbolTable st) {
-        String className = ((ClassType) n.f0.accept(this, st)).className();
-        ClassType c = st.getFullClassType(className);
-        MethodType m = c.typeMethod(n.f2.f0.tokenImage);
+        String classID = ((ClassType) n.f0.accept(this, st)).classID();
+        ClassType c = st.typeC(classID);
+        MethodType m = st.typeM(classID, n.f2.f0.tokenImage);
         boolean checks = true;
         if ( n.f4.present() )
             checks = validateParameters((ExpressionList) n.f4.node, m, st);
@@ -201,8 +210,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
                 count++; params++;
             }
         }
-        System.out.println(params);
-        System.out.println(m.parameterCount());
+//        System.out.println(params);
+//        System.out.println(m.parameterCount());
         if (params != m.parameterCount())
             return false;
         return true;
@@ -631,20 +640,15 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f2 -> "]"
      */
     public Type visit(ArrayType n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        return _ret;
+        return new com.company.ArrayType();
     }
 
     /**
      * f0 -> "boolean"
      */
     public Type visit(BooleanType n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        return _ret;
+        return null; //this should never be visitied, remember, symtab does declarations, typecheck does stratements, and don't visit nodes you don't need to visit, like this one which is always "boolean" so youd just do that in the method that would call this and use that knowlecdge there. aLSO REMEMBER you can do stuff in loops before visiting which is how hw4 is done
+//        return new PrimitiveType("boolean");//n.f0.accept(this, st);
     }
 
     /**
@@ -704,15 +708,12 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f6 -> ";"
      */
     public Type visit(ArrayAssignmentStatement n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        n.f3.accept(this, st);
-        n.f4.accept(this, st);
-        n.f5.accept(this, st);
-        n.f6.accept(this, st);
-        return _ret;
+        Type t1 = n.f0.accept(this, st);
+        Type t2 = n.f2.accept(this, st);
+        Type t3 = n.f5.accept(this, st);
+        if (!isArray(t1) || !isInt(t2) || !isInt(t3))
+            return null; //throw new TypeCheckException("invalid array assignment");
+        return new TypeChecksType();
     }
 
     /**
@@ -744,13 +745,16 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f4 -> Statement()
      */
     public Type visit(WhileStatement n, SymbolTable st) {
-        Type _ret=null;
-        n.f0.accept(this, st);
-        n.f1.accept(this, st);
-        n.f2.accept(this, st);
-        n.f3.accept(this, st);
-        n.f4.accept(this, st);
-        return _ret;
+        Type t1 = n.f2.accept(this, st);
+        if (!t1.equals(new PrimitiveType("boolean"))) {
+//            return null;
+            throw new TypeCheckException("while expression is not boolean");
+        }
+//            throw new TypeCheckException("26 violated");
+        Type t2 = n.f4.accept(this, st);
+        if (t2 == null)
+            return null;
+        return new TypeChecksType();
     }
 
     /**
@@ -798,6 +802,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         if (isBoolean(t1) && isBoolean(t2))
             return t1;
         return null;
+//        throw new TypeCheckException("mismatched and expression");
     }
 
     /**
@@ -973,7 +978,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f0 -> "this"
      */
     public Type visit(ThisExpression n, SymbolTable st) {
-        return st.typeClass(st.state.className);
+        return st.typeC(st.state.classID);
     }
 
     /**
@@ -998,7 +1003,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      */
     public Type visit(AllocationExpression n, SymbolTable st) {
         //n.f1.accept(this, st);
-        return st.typeClass(n.f1.f0.tokenImage);
+        return st.typeC(n.f1.f0.tokenImage);
     }
 
     /**

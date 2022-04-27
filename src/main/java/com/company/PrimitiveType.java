@@ -7,4 +7,10 @@ public class PrimitiveType extends Type {
         this.subType = subType;
         this.type = TYPE.PRIMITIVE;
     }
+
+    public boolean equals(Type other) {
+        if (other.type != this.type)
+            return false;
+        return this.subType.equals(((PrimitiveType) other).subType);
+    }
 }

@@ -1,20 +1,30 @@
 package com.company;
 
+import vapor.VaporClassType;
+import vapor.VaporMethodType;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClassType extends Type {
     private Map<Symbol, MethodType> methods;
+    private List<Symbol> methodsOrder;
     private Map<Symbol, Type> fields;
+    private List<Symbol> fieldsOrder;
     private Symbol name;
     private Symbol parent;
     private boolean main;
+    public VaporClassType vapor;
 
     public ClassType(String className, String parentName) {
         name = Symbol.symbol(className);
         if (parentName != null)
             parent = Symbol.symbol(parentName);
         methods = new HashMap<>();
+        methodsOrder = new ArrayList<>();
+        fieldsOrder = new ArrayList<>();
         fields = new HashMap<>();
         this.main = false;
         this.type = TYPE.CLASS;
@@ -22,6 +32,8 @@ public class ClassType extends Type {
 
     public ClassType(ClassType classType) {
         this.methods = new HashMap(classType.methods);
+        this.methodsOrder = new ArrayList<Symbol>(classType.methodsOrder);
+        this.fieldsOrder = new ArrayList<>(classType.fieldsOrder);
         this.fields = new HashMap(classType.fields);
         this.name = Symbol.symbol(classType.name.toString());
         if (classType.parent != null)
@@ -35,6 +47,8 @@ public class ClassType extends Type {
         if (parentName != null)
             parent = Symbol.symbol(parentName);
         methods = new HashMap<>();
+        methodsOrder = new ArrayList<>();
+        fieldsOrder = new ArrayList<>();
         fields = new HashMap<>();
         this.main = main;
         this.type = TYPE.CLASS;
@@ -44,9 +58,6 @@ public class ClassType extends Type {
         return methods;
     }
 
-    public String className() {
-        return name.toString();
-    }
 
     public String parentName() {
         if (parent != null)
@@ -62,6 +73,7 @@ public class ClassType extends Type {
         Symbol m = Symbol.symbol(methodName);
         if (methods.get(m) == null) {
             methods.put(m, methodType);
+            methodsOrder.add(m);
             return true;
         } else return false;
     }
@@ -70,6 +82,7 @@ public class ClassType extends Type {
         Symbol f = Symbol.symbol(fieldName);
         if (fields.get(f) == null) {
             fields.put(f, fieldType);
+            fieldsOrder.add(f);
             return true;
         } else return false;
     }
@@ -141,6 +154,10 @@ public class ClassType extends Type {
         return methods.get(m);
     }
 
+    public List<Symbol> getMethodsOrder() {
+        return methodsOrder;
+    }
+
     public boolean inherit(ClassType parent) {
         for (var entry : parent.methods.entrySet()) {
             if (this.methods.containsKey(entry.getKey())) {
@@ -157,17 +174,42 @@ public class ClassType extends Type {
             if (!this.fields.containsKey(entry.getKey())) {
                 this.fields.put(entry.getKey(), entry.getValue());
             }
-                //if (!this.fields.get(entry.getKey()).equals(parent.fields.get(entry.getKey())))
-                    //return false;
-                //else
-                    //this.fields.put(entry.getKey(), entry.getValue());
-                //this.fields.put(entry.getKey(), entry.getValue());
+            //if (!this.fields.get(entry.getKey()).equals(parent.fields.get(entry.getKey())))
+            //return false;
+            //else
+            //this.fields.put(entry.getKey(), entry.getValue());
+            //this.fields.put(entry.getKey(), entry.getValue());
 
         }
         return true;
     }
 
     public boolean equals(ClassType other) {
-            return this.name.toString().equals(other.name.toString());
+        return this.name.toString().equals(other.name.toString());
+    }
+
+    public String classID() {
+        return name.toString();
+    }
+
+
+    @Override
+    public boolean equals(Type other) {
+        if (other.type != TYPE.CLASS)
+            return false;
+        else return this.equals((ClassType) other);
+    }
+
+    public boolean hasParent() {
+        return this.parent != null;
+    }
+
+    public List<Symbol> getFieldsOrder() {
+        return fieldsOrder;
+    }
+
+    public Type typeF(String fieldID) {
+        Symbol id = Symbol.symbol(fieldID);
+        return fields.get(id);
     }
 }

@@ -1,0 +1,138 @@
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    int[] arr;
+    int b;
+    int c;
+
+    public int m(int a) {
+
+        return 1;
+    }
+    public int method(int[] arr) {
+        int[] b;
+        int m;
+        int c;
+        boolean z;
+        A s;
+        return b;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    int[] b;
+    int c;
+    public int method(int[] arr) {
+        A s;
+        return c;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    int[] b;
+    int c;
+
+    public boolean function() {
+        return true;
+    }
+    public int method(int[] arr) {
+        A s;
+        boolean d;
+        d = this.function();
+        d = true && this.function();
+        return c;
+    }
+}
+
+visit:339, TypeCheckVisitor (com.company) [6]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:679, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:34, Block (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:160, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:50, IfStatement (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:338, TypeCheckVisitor (com.company) [5]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:679, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:34, Block (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:753, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:42, WhileStatement (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:338, TypeCheckVisitor (com.company) [4]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:679, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:34, Block (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:753, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:42, WhileStatement (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:153, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:27, Statement (syntaxtree)
+visit:338, TypeCheckVisitor (com.company) [3]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:46, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:74, MethodDeclaration (syntaxtree)
+visit:338, TypeCheckVisitor (com.company) [2]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:26, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:46, ClassDeclaration (syntaxtree)
+accept:25, NodeChoice (syntaxtree)
+visit:492, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:23, TypeDeclaration (syntaxtree)
+visit:338, TypeCheckVisitor (com.company) [1]
+visit:8, TypeCheckVisitor (com.company)
+accept:37, NodeListOptional (syntaxtree)
+visit:438, TypeCheckVisitor (com.company)
+visit:8, TypeCheckVisitor (com.company)
+accept:34, Goal (syntaxtree)
+main:39, Typecheck

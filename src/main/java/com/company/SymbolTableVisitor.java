@@ -35,6 +35,14 @@ public class SymbolTableVisitor<R, A> extends GJDepthFirst<R, A> {
     }
 
     @Override
+    public R visit(Goal n, A argu) {
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        n.f2.accept(this, argu);
+        symbolTable.inheritAll();
+        return null;
+    }
+    @Override
     public R visit(MainClass n, A argu) { //come back adn rewrite with new symboltable
         String className = n.f1.f0.tokenImage;
         ClassType classType = new ClassType(className, null, true);
