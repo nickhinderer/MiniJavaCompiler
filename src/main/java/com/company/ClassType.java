@@ -168,6 +168,9 @@ public class ClassType extends Type {
             } else {
                 this.methods.put(entry.getKey(), entry.getValue());
             }
+            for (int i = parent.methodsOrder.size()-1; i >= 0; i--) {
+                this.methodsOrder.add(0, parent.methodsOrder.get(i));
+            }
 
         }
         for (var entry : parent.fields.entrySet()) {
@@ -180,6 +183,9 @@ public class ClassType extends Type {
             //this.fields.put(entry.getKey(), entry.getValue());
             //this.fields.put(entry.getKey(), entry.getValue());
 
+        }
+        for (int i = parent.fieldsOrder.size()-1; i >= 0; i--) {
+            this.fieldsOrder.add(0, parent.fieldsOrder.get(i));
         }
         return true;
     }

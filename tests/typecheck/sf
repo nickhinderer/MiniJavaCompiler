@@ -33,8 +33,27 @@ class A {
 class B {
     int[] b;
     int c;
+    boolean k;
     public int method(int[] arr) {
         A s;
+        return c;
+    }
+}
+
+
+class C extends B {
+
+    public int method(int[] arr) {
+
+        B d;
+        int c;
+        return 1;
+    }
+
+    public boolean method2(A e) {
+        boolean c;
+        c = k;
+        k = c;
         return c;
     }
 }
@@ -136,3 +155,511 @@ visit:438, TypeCheckVisitor (com.company)
 visit:8, TypeCheckVisitor (com.company)
 accept:34, Goal (syntaxtree)
 main:39, Typecheck
+
+
+
+if (a && b)
+
+---
+
+boolean c = a && b;
+
+if (c)
+
+
+-----
+
+boolean d = a && b
+
+boolean c = d
+
+if (c)
+
+
+-----
+
+boolean d;
+boolean c;
+d = a && b
+
+c = d
+
+if (c)
+
+-----
+
+boolean d;
+boolean c;
+if (a) {
+  if (b) {
+    d = true;
+  } else {
+  d = false;
+  }
+} else {
+      d = false;
+}
+
+
+d = a && b
+
+c = d
+
+if (c)
+
+
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    int[] b;
+    int c;
+    boolean k;
+    public int method(int[] arr) {
+        A s;
+        return c;
+    }
+}
+
+
+class C extends B {
+    boolean o;
+    public int method(int[] arr) {
+
+        B d;
+        int c;
+        return 1;
+    }
+
+    public boolean method2(A e) {
+        boolean c;
+        c = k;
+        k = c;
+        while ((!c) && o) {
+            System.out.println(1);
+        }
+        return c;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    int a;
+
+    public boolean method() {
+        return false;
+    }
+    public int method2(int i) {
+        return 1;
+    }
+}
+
+class C {
+
+}
+
+class D {
+    int m;
+    int k;
+    public int method() {
+        B b;
+        B c;
+        int[] arr;
+        boolean x;
+        b = new B();
+        c = new B();
+        arr = new int[4];
+        x = b.method();
+        x = c.method();
+        arr[0] = 1;
+        m = c.method2(m);
+        //m = c.method2(k);
+        //k = c.method2(k)
+        //k = c.method2(m)
+        k = this.method2(m);
+        return 0;
+    }
+    public int method2(int x) {
+        return 1;
+    }
+}
+
+
+class C extends B {
+    boolean o;
+    public int method(int[] arr) {
+
+        B d;
+        int c;
+        return 1;
+    }
+
+    public boolean method2(A e) {
+        boolean c;
+        c = k;
+        k = c;
+        while ((!c) && o) {
+            System.out.println(1);
+        }
+        return c;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    boolean d;
+    public int method(int[] arr) {
+        A s;
+        //boolean d;
+        int c;
+        d = true;
+        d = !(false);
+        d = d;
+        d = !(d);
+
+        return c;
+    }
+}
+
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class B {
+    boolean d;
+    public int method(int[] arr) {
+        A s;
+        //boolean d;
+        int c;
+
+
+        return c;
+    }
+}
+
+class C {
+    public int method() {
+        B b;
+        int i;
+        b = new B();
+        i = 1;
+        return 0;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class C {
+    int[] arr;
+    int size;
+    public int method() {
+        int i;
+        i = 1;
+        size = i;
+        arr = new int[size];
+        return 0;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class C {
+    boolean a;
+    boolean b;
+    public int method() {
+        boolean c;
+        int i;
+        a = false;
+        c = true;
+        b = a && c;
+        return 0;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class C {
+    int j;
+    boolean b;
+    public int method() {
+        int i;
+        i = 1;
+        j = 2;
+        b = i < j;
+        return 0;
+    }
+}
+
+
+class A {
+    public static void main(String[] args) {
+        System.out.println(1);
+    }
+}
+
+class C {
+    int[] arr;
+    boolean b;
+    int j;
+    public int method() {
+        int i;
+        int[] other;
+        arr = new int[10];
+        other = new int[j];
+        i = 2;
+        j = i;
+        i = arr[j];
+        j = other[j];
+        i = arr.length;
+        i = other.length;
+        return 0;
+    }
+}
+
+
+
+
+class Factorial{
+    public static void main(String[] a){
+        System.out.println(new Fac().ComputeFac(10));
+    }
+}
+
+class Fac {
+    public int ComputeFac(int num){
+        int num_aux ;
+        if (num < 1)
+            num_aux = 1 ;
+        else
+            num_aux = num * 1;
+        return num_aux ;
+    }
+}
+
+
+
+
+
+
+
+
+
+class Factorial{
+    public static void main(String[] a){
+        System.out.println(new Fac().ComputeFac(10));
+    }
+}
+
+class Fac {
+    public int ComputeFac(int num){
+        int num_aux ;
+        if (num < 1)
+            num_aux = 1 ;
+        else {
+            num_aux = num * 1;
+        System.out.println(1);
+            }
+        return num_aux ;
+    }
+}
+
+
+
+
+
+class Factorial{
+    public static void main(String[] a){
+        System.out.println(new Fac().ComputeFac(10));
+    }
+}
+
+class Fac {
+    public int ComputeFac(int num){
+        int num_aux ;
+        if (num < 1)
+            num_aux = 1 ;
+        else {
+            num_aux = num * 1;
+        System.out.println(1);
+            }
+        return num_aux ;
+    }
+}
+
+
+
+class A {
+public static void main(String[] args) {
+}
+}
+class B {
+int j;
+int[] arr;
+
+public int method() {
+    int i;
+    arr = new int[10];
+    arr[j] = 0;
+    if (i < 1) {
+        System.out.println(1);
+        System.out.println(j);
+        System.out.println(3);
+        if (i < 3) {
+
+        System.out.println(4);
+        } else {
+            i = 2;
+        }
+    } else {
+        if (i < 2) {
+        System.out.println(1);
+        } else {
+        System.out.println(5);
+        }
+    }
+    return 1;
+}
+}
+
+
+
+class A {
+public static void main(String[] args) {
+}
+}
+class B {
+boolean a;
+int xx;
+public int method(int z) {
+    boolean b;
+    b = true;
+    while (b) {
+        System.out.println(1);
+        while (a && b) {
+            System.out.println(2);
+        }
+        System.out.println(3);
+    }
+    return 0;
+}
+public int method2() {
+int i;
+
+i = this.method(xx);
+return 0;
+}
+}
+
+
+
+
+
+
+
+
+
+
+class A {
+    public static void main(String[] args) {
+    }
+}
+
+class B {
+    boolean a;
+    int xx;
+
+    public int method(int z) {
+        boolean b;
+        b = true;
+        while (b) {
+            System.out.println(1);
+            while (a && b) {
+                System.out.println(2);
+            }
+            System.out.println(3);
+        }
+        return 0;
+    }
+
+    public int method2() {
+        int i;
+
+        i = this.method(xx);
+        return 0;
+    }
+}
+
+class C {
+    B b;
+    public int method() {
+        int i;
+        b = new B();
+        i = b.method(4);
+        i = (this).method();
+        i = new B().method2();
+        return 1;
+    }
+}

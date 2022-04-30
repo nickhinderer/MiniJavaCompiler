@@ -21,7 +21,7 @@ public class VaporClassType {
         return vmt;
     }
 
-    public int size() {
+    public int allocSize() {
         return size;
     }
 
@@ -37,7 +37,9 @@ public class VaporClassType {
         Map<Symbol, MethodType> classMethods = classType.getMethods();
         int offset = 0;
         for (Symbol id : classType.getMethodsOrder()) {
-            methods.add(new VaporMethodType(classType.classID(), id.toString(), classMethods.get(id), offset++));
+            VaporMethodType method = new VaporMethodType(classType.classID(), id.toString(), classMethods.get(id), offset++);
+            methods.add(method);
+            classType.getMethodType(id.toString()).vapor = method;
         }
 //        for (var entry : classMethods.entrySet()) {
 //            methods.add(new VaporMethodType(classType.classID(), entry.getKey().toString(), entry.getValue(), offset++));

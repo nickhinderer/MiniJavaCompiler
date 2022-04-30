@@ -15,6 +15,30 @@ public class SymbolTable {
     public SymbolTable() {
         table = new Global();
         state = new Context();
+        ifCounter = 0; whileCounter = 0; nullCounter = 0;
+    }
+
+    public int ifCounter;
+    public int whileCounter;
+    public int nullCounter;
+    public int andCounter;
+
+    public int getWhileCounter() {
+        return whileCounter++;
+    }
+
+    public int getAndCounter() {
+        return andCounter++;
+    }
+
+    public int getNullCounter() {
+        return nullCounter++;
+    }
+
+    public int getIfCounter() {
+        int count = ifCounter;
+        ifCounter++;
+        return count;
     }
 
     public boolean addClass(String className, ClassType classType) {
@@ -174,15 +198,26 @@ public class SymbolTable {
         return table.getFieldTypeInfo(classID, id);
     }
 
-    public Type typePVF(String id) {
+    public Type typePVF(String classID, String methodID, String id) {
         Type type;
-        type = table.getParameterTypeInfo(state.classID, state.methodID, id);
+        type = table.getParameterTypeInfo(classID, methodID, id);
         if (type != null)
             return type;
-        type = table.getVariableTypeInfo(state.classID, state.methodID, id);
+        type = table.getVariableTypeInfo(classID, methodID, id);
+        //type = table.getVariableTypeInfo(state.classID, state.methodID, id);
         if (type != null)
             return type;
-        return table.getFieldTypeInfo(state.classID, id);
+        return table.getFieldTypeInfo(classID, id);
+        //return table.getFieldTypeInfo(state.classID, id);
+    }
+
+    public Type typePV(String classID, String methodID, String id) {
+        Type type;
+        type = table.getParameterTypeInfo(classID, methodID, id);
+        if (type != null)
+            return type;
+        type = table.getVariableTypeInfo(classID, methodID, id);
+        return type;
     }
 
     public int pvf(String classID, String methodID, String id) {

@@ -18,8 +18,12 @@ public class VaporMethodType {
         this.tempCount = 0;
     }
 
+    public void setStatements(String statements) {
+        this.statements = statements;
+    }
+
     private String createSignature(String className, String methodName, MethodType method) {
-        StringBuilder start = new StringBuilder("func " + className + "." + methodName + "(this ");
+        StringBuilder start = new StringBuilder("func " + className + "." + methodName + "(this");
         for (Symbol parameter : method.getOrder()) start.append(' ').append(parameter.toString());
         start.append(')');
         return start.toString();
@@ -34,6 +38,14 @@ public class VaporMethodType {
     }
 
     public String getTemp() {
-        return "s" + tempCount++;
+        return "t." + tempCount++;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public String statements() {
+        return statements;
     }
 }

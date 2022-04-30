@@ -125,7 +125,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     }
 
     public Type visit(Identifier n, SymbolTable st) {
-        return st.typePVF(n.f0.tokenImage);
+        return st.typePVF(st.state.classID, st.state.methodID, n.f0.tokenImage);
     }
 
     public Type visit(VarDeclaration n, SymbolTable st) {

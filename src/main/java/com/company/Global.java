@@ -98,6 +98,8 @@ public class Global {
         return classes.get(c).getVaraibleTypeInfo(methodName, variableName);
     }
 
+//    public Type getParameterOrVariableTypeInfo();
+
     public Set<Symbol> getClassNames() {
         return classes.keySet();
     }
