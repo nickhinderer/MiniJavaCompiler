@@ -702,9 +702,9 @@ public class VVisitor extends GJDepthFirst<String[], SymbolTable> {
                 break;
             case 8:
                 NodeChoice childExpression = ((BracketExpression) n.f0.f0.choice).f1.f0;
-                while (((PrimaryExpression) childExpression.choice).f0.which == 8)
-                    childExpression = ((BracketExpression) childExpression.choice).f1.f0;
-                switch (((PrimaryExpression) childExpression.choice).f0.which) {
+//                while (((PrimaryExpression) childExpression.choice).f0.which == 8)
+//                    childExpression = ((BracketExpression) childExpression.choice).f1.f0;
+                switch (childExpression.which) {
                     case 3:
                         String id1 = ((Identifier) childExpression.choice).f0.tokenImage;
                         boolean local1 = st.isPV(st.state.classID, st.state.methodID, id1);
@@ -722,6 +722,14 @@ public class VVisitor extends GJDepthFirst<String[], SymbolTable> {
                         type = st.typeC(classID1);
                         break;
                 }
+
+
+
+
+
+
+
+
 //                String[] expression = ((BracketExpression) n.f0.f0.choice).f1.accept(this, st);
 //                String retID = parseLastLineVariable(expression);
 //                if (isLocal(retID)) {

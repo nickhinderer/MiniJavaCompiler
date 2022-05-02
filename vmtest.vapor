@@ -1,0 +1,15 @@
+const vmt_Element
+  :Element.GetMarried
+
+func Main()
+  t.0 = HeapAllocZ(4)
+  ret
+
+
+func Element.GetMarried(this)
+  t.0 = [this+12]
+  [this+12] = t.0
+  this = [t.0+12]
+  [t.0+12] = this
+  ret t.0
+
