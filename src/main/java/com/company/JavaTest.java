@@ -1,5 +1,6 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -70,6 +71,9 @@ public class JavaTest {
             if (and(b1, b2) != ifand(b1, b2))
                 System.out.println("\n\n\n\n");
         }
+        ArrayList a = new ArrayList<>(Arrays.asList(1, 2, 3, 5));
+        a.add(5, 4);
+        System.out.println(a.toString());
     }
 
 
