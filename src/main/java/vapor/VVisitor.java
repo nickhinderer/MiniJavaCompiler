@@ -678,7 +678,7 @@ public class VVisitor extends GJDepthFirst<String[], SymbolTable> {
         }
         ClassType type = null;
         switch (n.f0.f0.which) {
-            case 3:
+            case 3: {
                 String id = ((Identifier) n.f0.f0.choice).f0.tokenImage;
                 boolean local = st.isPV(st.state.classID, st.state.methodID, id);
                 if (!local) {
@@ -686,48 +686,95 @@ public class VVisitor extends GJDepthFirst<String[], SymbolTable> {
                 } else {
                     type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id);
                 }
-                //identifier
-                break;
-            case 4:
+            }
+            //identifier
+            break;
+            case 4: {
                 type = st.typeC(st.state.classID);
 //                id = "this";
-                break;
-            case 6:
+            }
+            break;
+            case 6: {
                 String classID = ((AllocationExpression) n.f0.f0.choice).f1.f0.tokenImage;
 //                String allocation = n.f0.f0.choice.accept(this, st);
 //                ret += allocation;
 //                id = parseLastLineVariable(allocation);
                 type = st.typeC(classID);
                 //allocation
-                break;
-            case 8:
-                NodeChoice childExpression = ((BracketExpression) n.f0.f0.choice).f1.f0;
-//                while (((PrimaryExpression) childExpression.choice).f0.which == 8)
-//                    childExpression = ((BracketExpression) childExpression.choice).f1.f0;
-                switch (childExpression.which) {
-                    case 3:
-                        String id1 = ((Identifier) childExpression.choice).f0.tokenImage;
-                        boolean local1 = st.isPV(st.state.classID, st.state.methodID, id1);
-                        if (!local1) {
-                            type = (ClassType) st.typeF(st.state.classID, id1);
-                        } else {
-                            type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id1);
-                        }
-                        break;
-                    case 4:
-                        type = st.typeC(st.state.classID);
-                        break;
-                    case 6:
-                        String classID1 = ((AllocationExpression) childExpression.choice).f1.f0.tokenImage;
-                        type = st.typeC(classID1);
-                        break;
+            }
+            break;
+            case 8: {
+                BracketExpression be = (BracketExpression) n.f0.f0.choice;
+                Expression exp = be.f1;
+                PrimaryExpression pe = (PrimaryExpression) exp.f0.choice; //it is type checked, so don't even bother checking if 'which' is 8, it must be a primary expression ('which' == 8, which is confusing because the primaryexpresssion.nodechoice.which is also 8 for bracket expressions, they probably did this on purpose fucking dickheads
+                while (pe.f0.which == 8) {
+                    be = (BracketExpression) pe.f0.choice;
+                    exp = be.f1;
+                    pe = (PrimaryExpression) exp.f0.choice; //again, same as above, it has type checked, so its not going to be addition or anything other than an object nested in brackets which you are un-nesting here
                 }
 
 
+                int i = pe.f0.which;
+                switch (i) {
+                    case 3: {
+                        String id = ((Identifier) pe.f0.choice).f0.tokenImage;
+                        boolean local = st.isPV(st.state.classID, st.state.methodID, id);
+                        if (!local) {
+                            type = (ClassType) st.typeF(st.state.classID, id);
+                        } else {
+                            type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id);
+                        }
+                    }
+                    case 4: {
+                        type = st.typeC(st.state.classID);
+                        break;
+                    }
+                    case 6: {
+                        String classID = ((AllocationExpression) pe.f0.choice).f1.f0.tokenImage;
+                        type = st.typeC(classID);
+                        break;
+                    }
+
+                }
+
+                System.out.println();
+
+//                Expression exp = ((BracketExpression) n.f0.f0.choice).f1;
+//                PrimaryExpression pe;
+//                while (exp.f0.which == 8) {
+//                     pe = (PrimaryExpression) exp.f0.choice;
+//                    if (pe.f0.which != 8)
+//                        break;
+//                    exp = ((BracketExpression) pe.f0.choice).f1;
+//                }
+//
+//                System.out.println();
+//                NodeChoice childExpression = ((BracketExpression) n.f0.f0.choice).f1.f0;
+//                int i = childExpression.which;
 
 
+//                while (((PrimaryExpression) childExpression.choice).f0.which == 8)
+//                    childExpression = ((BracketExpression) childExpression.choice).f1.f0;
 
 
+//                switch (childExpression.which) {
+//                    case 3:
+//                        String id1 = ((Identifier) childExpression.choice).f0.tokenImage;
+//                        boolean local1 = st.isPV(st.state.classID, st.state.methodID, id1);
+//                        if (!local1) {
+//                            type = (ClassType) st.typeF(st.state.classID, id1);
+//                        } else {
+//                            type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id1);
+//                        }
+//                        break;
+//                    case 4:
+//                        type = st.typeC(st.state.classID);
+//                        break;
+//                    case 6:
+//                        String classID1 = ((AllocationExpression) childExpression.choice).f1.f0.tokenImage;
+//                        type = st.typeC(classID1);
+//                        break;
+//                }
 
 
 //                String[] expression = ((BracketExpression) n.f0.f0.choice).f1.accept(this, st);
@@ -738,6 +785,7 @@ public class VVisitor extends GJDepthFirst<String[], SymbolTable> {
 //                    break;
 //                }
                 break;
+            }
         }
         String argsSetup = "";
         String argsList = "";
