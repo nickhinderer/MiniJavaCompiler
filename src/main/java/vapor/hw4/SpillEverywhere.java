@@ -33,11 +33,12 @@ public class SpillEverywhere {
 
     public static void main(String[] args) {
         InputStream in = null;
-        try {
-            in = new FileInputStream("tests/translate/vapor/TreeVisitor.vapor");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            in = new FileInputStream("tests/translate/vapor/TreeVisitor.vapor");
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+        in = System.in;
         VaporProgram p;
         try {
             p = parseVapor(in, null);

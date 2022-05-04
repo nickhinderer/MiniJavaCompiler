@@ -1,7 +1,7 @@
-package vapor;
+package type;
 
-import com.company.MethodType;
-import com.company.Symbol;
+import type.MethodType;
+import symboltable.Symbol;
 
 public class VaporMethodType {
     private String name;

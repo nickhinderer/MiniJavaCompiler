@@ -1,4 +1,4 @@
-package com.company;
+package type;
 
 public class TypeChecksType extends Type {
 

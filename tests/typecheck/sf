@@ -154,7 +154,7 @@ accept:37, NodeListOptional (syntaxtree)
 visit:438, TypeCheckVisitor (com.company)
 visit:8, TypeCheckVisitor (com.company)
 accept:34, Goal (syntaxtree)
-main:39, Typecheck
+main:39, typecheck.typecheck
 
 
 

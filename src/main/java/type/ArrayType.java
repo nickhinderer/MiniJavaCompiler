@@ -1,4 +1,6 @@
-package com.company;
+package type;
+
+import type.enums.TYPE;
 
 public class ArrayType extends Type {
     public int length;

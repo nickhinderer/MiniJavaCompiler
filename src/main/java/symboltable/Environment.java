@@ -1,4 +1,9 @@
-package com.company;
+package symboltable;
+
+import type.Type;
+import type.ClassType;
+import type.MethodType;
+
 
 import java.util.*;
 
@@ -12,11 +17,11 @@ import java.util.*;
 //        this.outerScope = outerScope;
 //        this.scopeID = Symbol.symbol("GLOBAL");
     }*/
-public class Global {
+public class Environment {
 
-    private static Map<Symbol, ClassType> classes;
+    public static Map<Symbol, ClassType> classes;
 
-    public Global() {
+    public Environment() {
         classes = new HashMap<>();
     }
 

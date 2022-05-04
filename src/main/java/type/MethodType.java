@@ -1,6 +1,7 @@
-package com.company;
+package type;
 
-import vapor.VaporMethodType;
+import symboltable.Symbol;
+import type.enums.TYPE;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.company;
+package symboltable;
 
 import java.util.Dictionary;
 import java.util.Hashtable;

@@ -1,8 +1,6 @@
-package vapor;
+package type;
 
-import com.company.ClassType;
-import com.company.MethodType;
-import com.company.Symbol;
+import symboltable.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;

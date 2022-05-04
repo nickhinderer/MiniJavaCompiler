@@ -1,4 +1,6 @@
-package com.company;
+package type;
+
+import type.enums.TYPE;
 
 public class PrimitiveType extends Type {
     public String subType;

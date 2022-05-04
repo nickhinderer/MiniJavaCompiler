@@ -1,4 +1,4 @@
-package com.company;
+package typecheck;
 
 public class TypeCheckException extends RuntimeException {
     public TypeCheckException() {

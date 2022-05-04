@@ -1,7 +1,7 @@
-package com.company;
+package type;
 
-import vapor.VaporClassType;
-import vapor.VaporMethodType;
+import symboltable.Symbol;
+import type.enums.TYPE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class ClassType extends Type {
     private List<Symbol> methodsOrder;
     private Map<Symbol, Type> fields;
     private List<Symbol> fieldsOrder;
-    private Symbol name;
+    private final Symbol name;
     private Symbol parent;
     private boolean main;
     public VaporClassType vapor;

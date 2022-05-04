@@ -1,10 +1,14 @@
-package com.company;
+package typecheck;
 
+import symboltable.SymbolTable;
 import syntaxtree.*;
-import syntaxtree.ArrayType;
+import type.ArrayType;
+import type.enums.TYPE;
 import visitor.GJDepthFirst;
-
+import type.Type;
+import type.enums.TYPE;
 import java.util.Enumeration;
+import type.*;
 public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 
     public TypeCheckVisitor() {
@@ -194,13 +198,12 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
             return null;
     }
 
-    private boolean validateParameters(ExpressionList n, MethodType m, SymbolTable st) {
+    public boolean validateParameters(ExpressionList n, MethodType m, SymbolTable st) {
         Type t = n.f0.accept(this, st);
         int params = 0;
         if (!matchesExpectedParameter(t, m, st, 0))
             return false;
         else params++;
-
         if ( n.f1.present() ) {
             int count = 0;
             for ( Enumeration<Node> e = n.f1.elements(); e.hasMoreElements(); ) {
@@ -212,20 +215,16 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         }
 //        System.out.println(params);
 //        System.out.println(m.parameterCount());
-        if (params != m.parameterCount())
-            return false;
-        return true;
+        return params == m.parameterCount();
     }
 
-    private boolean matchesExpectedParameter(Type type, MethodType m, SymbolTable st, int index) {
+    public boolean matchesExpectedParameter(Type type, MethodType m, SymbolTable st, int index) {
         if (type == null)
             return false;
         String parameter = m.parameter(index);
         if (parameter == null)
             return false;
-        if (!st.subType(type, m.getParameterType(parameter)))
-            return false;
-        return true;
+        return st.subType(type, m.getParameterType(parameter));
     }
 
 
@@ -255,7 +254,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         return m.getReturnType();
     }
 
-    private boolean validateParameters(ExpressionList n, MethodType m, SymbolTable st) {
+    public boolean validateParameters(ExpressionList n, MethodType m, SymbolTable st) {
         Type t1 = ((ExpressionList) n.f4.node).f0.accept(this, st);
         if (t1 == null)
             return null;
@@ -283,32 +282,26 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         }
     }*/
 
-    private boolean isBoolean(Type t) {
+    public boolean isBoolean(Type t) {
         if (t == null)
             return false;
         if (t.type != TYPE.PRIMITIVE)
             return false;
-        if (!((PrimitiveType) t).subType.equals("boolean"))
-            return false;
-        return true;
+        return ((PrimitiveType) t).subType.equals("boolean");
     }
 
-    private boolean isInt(Type t) {
+    public boolean isInt(Type t) {
         if (t == null)
             return false;
         if (t.type != TYPE.PRIMITIVE)
             return false;
-        if (!((PrimitiveType) t).subType.equals("int"))
-            return false;
-        return true;
+        return ((PrimitiveType) t).subType.equals("int");
     }
 
-    private boolean isArray(Type t) {
+    public boolean isArray(Type t) {
         if (t == null)
             return false;
-        if (t.type != TYPE.ARRAY)
-            return false;
-        return true;
+        return t.type == TYPE.ARRAY;
     }
 
 
@@ -640,7 +633,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
      * f2 -> "]"
      */
     public Type visit(ArrayType n, SymbolTable st) {
-        return new com.company.ArrayType();
+        return new ArrayType();
     }
 
     /**
@@ -992,7 +985,7 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         Type t = n.f3.accept(this, st);
         if (!isInt(t))
             return null;
-        return new com.company.ArrayType();
+        return new ArrayType();
     }
 
     /**

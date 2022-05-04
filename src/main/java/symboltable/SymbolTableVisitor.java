@@ -1,20 +1,26 @@
-package com.company;
+package symboltable;
 
 import syntaxtree.*;
 import visitor.GJDepthFirst;
+import type.Type;
+import type.ArrayType;
+import type.ClassType;
+import type.MethodType;
+import typecheck.TypeCheckException;
+import type.PrimitiveType;
 
 public class SymbolTableVisitor<R, A> extends GJDepthFirst<R, A> {
 
 
-    private static SymbolTable symbolTable = new SymbolTable();
-    private static String currentClass, currentMethod;
-    private static boolean parameter = false, variable = false, field = false;
+    public static SymbolTable symbolTable = new SymbolTable();
+    public static String currentClass, currentMethod;
+    public static boolean parameter = false, variable = false, field = false;
 
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }
 
-    private static Type getType(NodeChoice n) {
+    public static Type getType(NodeChoice n) {
         Type type = null;
         switch (n.which) {
             case 0:

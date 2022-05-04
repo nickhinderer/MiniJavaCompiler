@@ -1,19 +1,28 @@
-package com.company;
+package symboltable;
+
+import type.Type;
+import type.ClassType;
+import type.MethodType;
+import type.PrimitiveType;
+import typecheck.TypeCheckException;
+
+import type.enums.TYPE;
+
+
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 
 public class SymbolTable {
     //beginScope, enterScope, etc. begin scope. this. whiteboard. etc.
-    private static Global table;
+    public static Environment table;
     public Context state;
 
     public SymbolTable() {
-        table = new Global();
+        table = new Environment();
         state = new Context();
         ifCounter = 0; whileCounter = 0; nullCounter = 0;
     }

@@ -31,10 +31,10 @@ public class VM2M {
     public static void main(String[] args) {
         InputStream in = null;
         try {
-//            in = System.in;
-            in = new FileInputStream("tests/translate/vaporm/LinearSearch.vaporm");
-//        } catch (Exception e) {
-        } catch (FileNotFoundException e) {
+            in = System.in;
+//            in = new FileInputStream("tests/translate/vaporm/LinearSearch.vaporm");
+        } catch (Exception e) {
+//        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
         VaporProgram p;

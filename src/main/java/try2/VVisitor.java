@@ -1,9 +1,9 @@
 //package vapor;
 //
-//import com.company.ClassType;
-//import com.company.PrimitiveType;
-//import com.company.Symbol;
-//import com.company.SymbolTable;
+//import Type.ClassType;
+//import Type.PrimitiveType;
+//import SymbolTable.Symbol;
+//import SymbolTable.SymbolTable;
 //import syntaxtree.*;
 //import visitor.GJDepthFirst;
 //import visitor.GJVisitor;
@@ -23,7 +23,7 @@
 //        initialize();
 //    }
 //
-//    private void initialize() {
+//    public void initialize() {
 //        Map<Symbol, VaporClassType> classes = new HashMap<>();
 //        for (var entry : symbolTable.classes().entrySet())
 //            if (!entry.getValue().isMain())

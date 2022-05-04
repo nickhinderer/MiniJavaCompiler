@@ -1,11 +1,14 @@
 package vapor;
 
-import com.company.*;
+import symboltable.SymbolTable;
+import type.VaporClassType;
+import typecheck.TypeCheckVisitor;
 import syntaxtree.*;
 import syntaxtree.ArrayType;
 import syntaxtree.Type;
 import visitor.GJDepthFirst;
-import visitor.GJVisitor;
+
+import type.ClassType;
 
 import java.util.*;
 
@@ -22,7 +25,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         initialize();
     }
 
-    private void initialize() {
+    public void initialize() {
         symbolTable.classes().forEach(VaporClassType::create);
 //        Map<Symbol, VaporClassType> classes = new HashMap<>();
 //        for (var entry : symbolTable.classes().entrySet())
@@ -216,7 +219,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         return new String[]{"", ""};
     }
 
-    private static String removeEmptyLines(String text) {
+    public static String removeEmptyLines(String text) {
         final String[] strings = text.split("\n");
         StringBuilder result = new StringBuilder();
         for (int i = 0, stringsLength = strings.length; i < stringsLength; i++) {
@@ -830,7 +833,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         return n.f1.accept(this, st);
     }
 
-    private static String parseLastLineVariable(String expression) {
+    public static String parseLastLineVariable(String expression) {
         String[] lines = expression.split("\n");
         for (int i = lines.length - 1; i >= 0; i--) {
             if (!lines[i].isBlank()) {
@@ -840,13 +843,13 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         return null;
     }
 
-    private static String[] wrap(String[] expression, SymbolTable st) {
+    public static String[] wrap(String[] expression, SymbolTable st) {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String bind = temporary + " = " + expression[0] + "\n";
         return new String[]{temporary, expression[1] + "\n" + bind};
     }
 
-    private static boolean naked(String[] expression) {
+    public static boolean naked(String[] expression) {
         if (expression[0].charAt(0) == '[' && expression[0].charAt(expression[0].length() - 1) == ']')
             return true;
         if (expression[0].contains("call "))

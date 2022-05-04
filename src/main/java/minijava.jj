@@ -160,13 +160,13 @@ void ClassExtendsDeclaration() :
 void VarDeclaration() :  
 {}
 { 
-  Type() Identifier() ";"      
+  type() Identifier() ";"
 }
 
 void MethodDeclaration() :  
 {}
 {
-  "public" Type() Identifier() 
+  "public" type() Identifier()
   "(" ( FormalParameterList() )? ")"   
   "{" ( LOOKAHEAD(2) VarDeclaration() )* 
       ( Statement() )* "return" Expression() ";" "}"
@@ -181,7 +181,7 @@ void FormalParameterList() :
 void FormalParameter() :
 {}
 {
-  Type() Identifier()
+  type() Identifier()
 }
 
 void FormalParameterRest() :
@@ -190,7 +190,7 @@ void FormalParameterRest() :
   "," FormalParameter()
 }
 
-void Type() :
+void type() :
 {}
 {
   LOOKAHEAD(3)

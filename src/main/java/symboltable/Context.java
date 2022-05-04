@@ -1,4 +1,4 @@
-package com.company;
+package symboltable;
 
 public class Context {
 //    public boolean variable;

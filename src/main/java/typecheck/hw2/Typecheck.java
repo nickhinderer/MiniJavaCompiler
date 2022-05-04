@@ -1,9 +1,9 @@
-import com.company.SymbolTable;
-//import TypeCheck.*;
-import com.company.SymbolTableVisitor;
-import com.company.TypeCheckException;
-import com.company.TypeCheckVisitor;
+package typecheck.hw2;//import TypeCheck.*;
+import symboltable.SymbolTableVisitor;
+import parser.MiniJavaParser;
 import syntaxtree.*;
+import typecheck.TypeCheckException;
+import typecheck.TypeCheckVisitor;
 import vapor.VaporVisitor;
 import visitor.*;
 

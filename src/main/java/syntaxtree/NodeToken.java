@@ -4,8 +4,6 @@
 
 package syntaxtree;
 
-import com.company.Type;
-import com.company.TypeCheckVisitor;
 import visitor.GJVisitor;
 import visitor.Visitor;
 
