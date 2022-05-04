@@ -1,6 +1,8 @@
 //oracle: should pass
 class Factorial{
     public static void main(String[] a){
+        int i;
+        boolean k;
         System.out.println((new Fac()).ComputeFac(10));
     }
 }

@@ -8,7 +8,16 @@ public class VaporMethodType {
     private String signature;
     private String statements;
     private final int offset;
-    private int tempCount;
+    private volatile int tempCount;
+
+
+    public VaporMethodType(String classID) {
+        signature = "func Main()";
+        statements = "";
+        name = classID + ".Main";
+        this.tempCount = 0;
+        offset = 0;
+    }
 
     public VaporMethodType(String className, String methodName, MethodType method, int offset) {
         signature = createSignature(className, methodName, method);
@@ -37,7 +46,7 @@ public class VaporMethodType {
         return name;
     }
 
-    public String getTemp() {
+    public synchronized String getTemp() {
         return "t." + tempCount++;
     }
 

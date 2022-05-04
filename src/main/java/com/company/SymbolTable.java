@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.function.BiConsumer;
 
 
 public class SymbolTable {
@@ -18,12 +18,12 @@ public class SymbolTable {
         ifCounter = 0; whileCounter = 0; nullCounter = 0;
     }
 
-    public int ifCounter;
-    public int whileCounter;
+    public volatile int ifCounter;
+    public volatile int whileCounter;
     public int nullCounter;
     public int andCounter;
 
-    public int getWhileCounter() {
+    public synchronized int getWhileCounter() {
         return whileCounter++;
     }
 
@@ -35,7 +35,7 @@ public class SymbolTable {
         return nullCounter++;
     }
 
-    public int getIfCounter() {
+    public synchronized int getIfCounter() {
         int count = ifCounter;
         ifCounter++;
         return count;
@@ -334,4 +334,35 @@ public class SymbolTable {
         table.setClasses(updated);
 
     }
+
+    public void printVapor() {
+        table.classes().forEach(this::printVMT);
+        printMethods(table.main());
+        table.classes().forEach(this::printMethods);
+        final String allocArray = "func AllocArray(size)\n  bytes = MulS(size 4)\n  bytes = Add(bytes 4)\n  v = HeapAllocZ(bytes)\n  [v] = size\n  ret v";
+        System.out.println(allocArray);
+    }
+
+    private void printMethods(ClassType classType) {
+        //print main first
+        classType.getMethods().forEach(this::printMethod);
+    }
+
+    private void printMethods(Symbol symbol, ClassType classType) {
+        if (classType.isMain())
+            return;
+        classType.getMethods().forEach(this::printMethod);
+    }
+
+    private void printMethod(Symbol symbol, MethodType methodType) {
+        System.out.println(methodType.vapor.getSignature());
+        System.out.println(methodType.vapor.statements());
+    }
+
+    private void printVMT(Symbol symbol, ClassType classType) {
+        if (classType.isMain())
+            return;
+        System.out.println(classType.vapor.vmt());
+    }
+
 }

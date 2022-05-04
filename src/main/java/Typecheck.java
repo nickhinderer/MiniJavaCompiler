@@ -4,7 +4,6 @@ import com.company.SymbolTableVisitor;
 import com.company.TypeCheckException;
 import com.company.TypeCheckVisitor;
 import syntaxtree.*;
-import vapor.VVisitor;
 import vapor.VaporVisitor;
 import visitor.*;
 
@@ -16,7 +15,7 @@ public class Typecheck {
 			root = new MiniJavaParser(System.in).Goal();
 
 			PrettyPrinter<Void,String> pp = new PrettyPrinter<Void, String>();
-			root.accept(pp, "");
+//			root.accept(pp, "");
 
 //			SymbolTableVisit ts = new SymbolTableVisit();
 //			root.accept(ts, 0);
@@ -42,8 +41,9 @@ public class Typecheck {
 				throw new TypeCheckException();
 			//SymbolTable symbolTable = sv.getSymbolTable();
 			//VaporVisitor v = new VaporVisitor(sv.getSymbolTable());
-			VVisitor v = new VVisitor(sv.getSymbolTable());
+			VaporVisitor v = new VaporVisitor(sv.getSymbolTable());
 			root.accept(v, null);
+//			v.
 			System.out.println("Program type checked successfully");
 		} catch (Exception e) {
 

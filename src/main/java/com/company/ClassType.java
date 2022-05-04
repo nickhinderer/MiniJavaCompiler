@@ -163,13 +163,14 @@ public class ClassType extends Type {
             if (this.methods.containsKey(entry.getKey())) {
                 if (!this.methods.get(entry.getKey()).equals(parent.methods.get(entry.getKey())))
                     return false;
-                else
-                    this.methods.put(entry.getKey(), entry.getValue());
+//                else
+//                    this.methods.put(entry.getKey(), entry.getValue());
             } else {
                 this.methods.put(entry.getKey(), entry.getValue());
             }
             for (int i = parent.methodsOrder.size()-1; i >= 0; i--) {
-                this.methodsOrder.add(0, parent.methodsOrder.get(i));
+                if (!this.methods.containsKey(parent.methodsOrder.get(i)))
+                    this.methodsOrder.add(0, parent.methodsOrder.get(i));
             }
 
         }

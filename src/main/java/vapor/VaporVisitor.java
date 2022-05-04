@@ -1,10 +1,9 @@
 package vapor;
 
-import com.company.ClassType;
-import com.company.PrimitiveType;
-import com.company.Symbol;
-import com.company.SymbolTable;
+import com.company.*;
 import syntaxtree.*;
+import syntaxtree.ArrayType;
+import syntaxtree.Type;
 import visitor.GJDepthFirst;
 import visitor.GJVisitor;
 
@@ -24,11 +23,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     }
 
     private void initialize() {
-        Map<Symbol, VaporClassType> classes = new HashMap<>();
-        for (var entry : symbolTable.classes().entrySet())
-            if (!entry.getValue().isMain())
-                classes.put(entry.getKey(), new VaporClassType(entry.getValue()));
-//        Map<Symbol, VaporClassType> functions = new HashMap();
+        symbolTable.classes().forEach(VaporClassType::create);
+//        Map<Symbol, VaporClassType> classes = new HashMap<>();
+//        for (var entry : symbolTable.classes().entrySet())
+//            classes.put(entry.getKey(), VaporClassType.create(entry.getValue())); //new VaporClassType(entry.getValue(), false));
     }
 
 
@@ -47,16 +45,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     }
 
     public String[] visit(NodeListOptional n, SymbolTable st) {
-//        if (n.present()) {
-//            String[] _ret = null;
-//            int _count = 0;
-//            for (Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-//                String[] s = e.nextElement().accept(this, st);
-//                _count++;
-//            }
-//            return _ret;
-//        } else
-//            return null;
         if (n.present()) {
             String[] _ret = new String[n.nodes.size()];
             int _count = 0;
@@ -104,26 +92,20 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     public String[] visit(Goal n, SymbolTable st) {
         String[] _ret = null;
         st = symbolTable;
-        //n.f0.accept(this, st);
-
+        n.f0.accept(this, st);
         if (n.f1.present()) {
             for (Enumeration<Node> e = n.f1.nodes.elements(); e.hasMoreElements(); ) {
                 e.nextElement().accept(this, st);
             }
         }
-
-//        n.f1.accept(this, st);
-        for (var entry : st.classes().entrySet()) {
-            if (!entry.getValue().isMain())
-                for (var method : entry.getValue().getMethods().entrySet()) {
-                    System.out.println(method.getValue().vapor.getSignature());
-                    System.out.println(method.getValue().vapor.statements());
-                }
-//            entry.getValue().getMethods().forEach((key, value) -> {
-//                System.out.println(value.vapor.getSignature());
-//                System.out.println(value.vapor.statements());
-//            });
-        }
+//        for (var entry : st.classes().entrySet()) {
+//            if (!entry.getValue().isMain())
+//                for (var method : entry.getValue().getMethods().entrySet()) {
+//                    System.out.println(method.getValue().vapor.getSignature());
+//                    System.out.println(method.getValue().vapor.statements());
+//                }
+//        }
+        st.printVapor();
         return _ret;
     }
 
@@ -148,10 +130,11 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f17 -> "}"
      */
     public String[] visit(MainClass n, SymbolTable st) {
-        String[] _ret = null;
-//        n.f1.accept(this, st);
-        n.f15.accept(this, st);
-        return _ret;
+        String[] statements = n.f15.accept(this, st);
+        statements[0] += "\nret";
+        String classID = n.f1.f0.tokenImage;
+        st.typeM(classID, "main").vapor.setStatements(statements[0]);
+        return null;
     }
 
     /**
@@ -171,9 +154,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f5 -> "}"
      */
     public String[] visit(ClassDeclaration n, SymbolTable st) {
-        String[] _ret = null;
-//        n.f1.accept(this, st);
-//        n.f2.accept(this, st);
         st.state.classID = n.f1.f0.tokenImage;
         return n.f4.accept(this, st);
     }
@@ -189,13 +169,9 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f7 -> "}"
      */
     public String[] visit(ClassExtendsDeclaration n, SymbolTable st) {
-        String[] _ret = null;
-//        n.f1.accept(this, st);
-//        n.f3.accept(this, st);
-//        n.f5.accept(this, st);
         st.state.classID = n.f1.f0.tokenImage;
         n.f6.accept(this, st);
-        return _ret;
+        return null;
     }
 
     /**
@@ -204,10 +180,9 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f2 -> ";"
      */
     public String[] visit(VarDeclaration n, SymbolTable st) {
-        String[] _ret = null;
         n.f0.accept(this, st);
         n.f1.accept(this, st);
-        return _ret;
+        return null;
     }
 
     /**
@@ -226,25 +201,17 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f12 -> "}"
      */
     public String[] visit(MethodDeclaration n, SymbolTable st) {
-        String[] _ret = null;
-//        n.f1.accept(this, st);
-//        n.f2.accept(this, st);
-//        n.f4.accept(this, st);
-//        n.f7.accept(this, st);
         st.state.methodID = n.f2.f0.tokenImage;
         String[] statements = n.f8.accept(this, st);
         StringBuilder methodStatements = new StringBuilder();
         if (statements != null)
             for (String statement : statements) {
                 methodStatements.append(removeEmptyLines(statement));
-//            methodStatements.append(removeEmptyLines(statement));
-//            methodStatements.append(statement);
             }
-//        methodStatements.reverse();
         String[] returnExpression = n.f10.accept(this, st);
         if (naked(returnExpression))
             returnExpression = wrap(returnExpression, st);
-        methodStatements.append(returnExpression[1]).append('\n').append("return ").append(returnExpression[0]);
+        methodStatements.append(returnExpression[1]).append('\n').append("ret ").append(returnExpression[0]);
         st.typeM(st.state.classID, st.state.methodID).vapor.setStatements(methodStatements.toString());
         return new String[]{"", ""};
     }
@@ -256,7 +223,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             String str = strings[i];
             if (str.isEmpty()) continue;
             result.append(str);
-//            if (i + 1 == stringsLength) continue;
             result.append("\n");
         }
         return result.toString();
@@ -357,18 +323,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(Block n, SymbolTable st) {
         if (n.f1.present()) {
-            //        if (n.present()) {
-//            String[] _ret = null;
-//            int _count = 0;
-//            for (Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-//                String[] s = e.nextElement().accept(this, st);
-//                _count++;
-//            }
-//            return _ret;
-//        } else
-//            return null;
-
-
             String[] statements = n.f1.accept(this, st);
             int count = 0;
             String block = "";
@@ -379,9 +333,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             }
             return new String[]{block, ""};
         } else return new String[]{"", ""};
-//        if (block.length > 1)
-//            return new String[]{block[1] + "\n" + block[0], ""};
-//        return new String[]{block[0], ""};
     }
 
     /**
@@ -394,8 +345,8 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] _ret = null;
         String[] identifier = n.f0.accept(this, st);
         String[] expression = n.f2.accept(this, st);
-//        if (naked(expression))
-//            expression = wrap(expression, st);
+        if (naked(expression))
+            expression = wrap(expression, st);
         String assignment = identifier[0] + " = " + expression[0] + "\n";
         String[] ret = new String[]{assignment, identifier[1] + "\n" + expression[1]};
         String statement = ret[1] + "\n" + ret[0];
@@ -420,8 +371,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String temporary1 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String temporary2 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String lookup = temporary1 + " = " + array[0] + "\n" +
-//                temporary2 + " = [" + index[0] + "]\n" +
-                //error checking, index checking, null checking, print to error
                 temporary2 + " = MulS(" + index[0] + " 4)\n" +
                 temporary2 + " = Add(" + temporary1 + " " + temporary2 + ")\n";
 
@@ -455,23 +404,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] ifBody = n.f4.accept(this, st);
         String ifBodyStatements = ifBody[1] + '\n' + ifBody[0];
         String[] elseBody = n.f6.accept(this, st);
-//        StringBuilder elseBodyStatements = new StringBuilder();
-//        Scanner scanner = new Scanner(elseBody[1]);
-//        while (scanner.hasNextLine()) {
-//            String line = scanner.nextLine();
-//            elseBodyStatements.append('\t').append(line);
-//            // process the line
-//        }
-//        elseBodyStatements.append('\t').append(elseBody[0]);
-//        StringBuilder ifBodyStatements = new StringBuilder();
-//        Scanner scanner2 = new Scanner(ifBody[1]);
-//        while (scanner2.hasNextLine()) {
-//            String line = scanner2.nextLine();
-//            ifBodyStatements.append('\t').append(line);
-//            // process the line
-//        }
-//        ifBodyStatements.append('\t').append(ifBody[0]);
-//        scanner.close();
         String elseBodyStatements = elseBody[1] + '\n' + elseBody[0];
         String ifStatement = condition[1] + "\nif0 " + condition[0] + " goto :if" + ifCount + "_else" +
                 ifBodyStatements + "\ngoto :if" + ifCount + "_end\n" +
@@ -548,12 +480,11 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] primaryExpression2 = n.f2.accept(this, st);
         if (naked(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
-
         String and = temporary + " = 0\n" +
                 "if0 " + primaryExpression1[0] + " goto :and" + andCount + "_end\n" +
                 "\tif0 " + primaryExpression2[0] + " goto :and" + andCount + "_end\n" +
                 "\t\t" + temporary + " = 1\n" +
-                "and" + andCount + "_end\n";
+                "and" + andCount + "_end:\n";
         return new String[]{temporary, primaryExpression1[1] + "\n" + primaryExpression2[1] + "\n" + and};
     }
 
@@ -637,8 +568,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String temporary1 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String temporary2 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String lookup = temporary1 + " = " + array[0] + "\n" +
-//                temporary2 + " = [" + index[0] + "]\n" +
-                //error checking, index checking, null checking, print to error
                 temporary2 + " = MulS(" + index[0] + " 4)\n" +
                 temporary2 + " = Add(" + temporary1 + " " + temporary2 + ")\n";
 
@@ -652,13 +581,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(ArrayLength n, SymbolTable st) {
         String[] array = n.f0.accept(this, st);
-//        if (naked(array)) {
-//            array = wrap(array, st);
-//
-//      }
         String length = array[0];
-//        if (!naked(array))
-//            length = "[" + length + "]";
         return new String[]{"[" + length + "]", array[1] + "\n"};
     }
 
@@ -671,11 +594,11 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f5 -> ")"
      */
     public String[] visit(MessageSend n, SymbolTable st) {
-        String[] _ret = null;
         String[] primaryExpression = n.f0.accept(this, st);
         if (naked(primaryExpression)) {
             primaryExpression = wrap(primaryExpression, st);
         }
+        String argsSetup = "";
         ClassType type = null;
         switch (n.f0.f0.which) {
             case 3: {
@@ -686,108 +609,60 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
                 } else {
                     type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id);
                 }
+                break;
             }
-            //identifier
-            break;
             case 4: {
                 type = st.typeC(st.state.classID);
-//                id = "this";
+                break;
             }
-            break;
             case 6: {
                 String classID = ((AllocationExpression) n.f0.f0.choice).f1.f0.tokenImage;
-//                String allocation = n.f0.f0.choice.accept(this, st);
-//                ret += allocation;
-//                id = parseLastLineVariable(allocation);
                 type = st.typeC(classID);
-                //allocation
+                break;
             }
-            break;
             case 8: {
                 BracketExpression be = (BracketExpression) n.f0.f0.choice;
                 Expression exp = be.f1;
-                PrimaryExpression pe = (PrimaryExpression) exp.f0.choice; //it is type checked, so don't even bother checking if 'which' is 8, it must be a primary expression ('which' == 8, which is confusing because the primaryexpresssion.nodechoice.which is also 8 for bracket expressions, they probably did this on purpose fucking dickheads
-                while (pe.f0.which == 8) {
-                    be = (BracketExpression) pe.f0.choice;
-                    exp = be.f1;
-                    pe = (PrimaryExpression) exp.f0.choice; //again, same as above, it has type checked, so its not going to be addition or anything other than an object nested in brackets which you are un-nesting here
-                }
+                if (exp.f0.which == 7) {
+                    TypeCheckVisitor tcv = new TypeCheckVisitor();
+                    type = (ClassType) exp.f0.accept(tcv, st);
+                    String[] messageSend = exp.f0.accept(this, st);
+                    argsSetup += messageSend[1];//setup
+                    argsSetup += messageSend[0];//call
+                } else {
 
-
-                int i = pe.f0.which;
-                switch (i) {
-                    case 3: {
-                        String id = ((Identifier) pe.f0.choice).f0.tokenImage;
-                        boolean local = st.isPV(st.state.classID, st.state.methodID, id);
-                        if (!local) {
-                            type = (ClassType) st.typeF(st.state.classID, id);
-                        } else {
-                            type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id);
+                    PrimaryExpression pe = (PrimaryExpression) exp.f0.choice; //it is type checked, so don't even bother checking if 'which' is 8, it must be a primary expression ('which' == 8, which is confusing because the primaryexpresssion.nodechoice.which is also 8 for bracket expressions, they probably did this on purpose fucking dickheads
+                    while (pe.f0.which == 8) {
+                        be = (BracketExpression) pe.f0.choice;
+                        exp = be.f1;
+                        pe = (PrimaryExpression) exp.f0.choice; //again, same as above, it has type checked, so its not going to be addition or anything other than an object nested in brackets which you are un-nesting here
+                    }
+                    int i = pe.f0.which;
+                    switch (i) {
+                        case 3: {
+                            String id = ((Identifier) pe.f0.choice).f0.tokenImage;
+                            boolean local = st.isPV(st.state.classID, st.state.methodID, id);
+                            if (!local) {
+                                type = (ClassType) st.typeF(st.state.classID, id);
+                            } else {
+                                type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id);
+                            }
+                        }
+                        case 4: {
+                            type = st.typeC(st.state.classID);
+                            break;
+                        }
+                        case 6: {
+                            String classID = ((AllocationExpression) pe.f0.choice).f1.f0.tokenImage;
+                            type = st.typeC(classID);
+                            break;
                         }
                     }
-                    case 4: {
-                        type = st.typeC(st.state.classID);
-                        break;
-                    }
-                    case 6: {
-                        String classID = ((AllocationExpression) pe.f0.choice).f1.f0.tokenImage;
-                        type = st.typeC(classID);
-                        break;
-                    }
-
                 }
-
-                System.out.println();
-
-//                Expression exp = ((BracketExpression) n.f0.f0.choice).f1;
-//                PrimaryExpression pe;
-//                while (exp.f0.which == 8) {
-//                     pe = (PrimaryExpression) exp.f0.choice;
-//                    if (pe.f0.which != 8)
-//                        break;
-//                    exp = ((BracketExpression) pe.f0.choice).f1;
-//                }
-//
-//                System.out.println();
-//                NodeChoice childExpression = ((BracketExpression) n.f0.f0.choice).f1.f0;
-//                int i = childExpression.which;
-
-
-//                while (((PrimaryExpression) childExpression.choice).f0.which == 8)
-//                    childExpression = ((BracketExpression) childExpression.choice).f1.f0;
-
-
-//                switch (childExpression.which) {
-//                    case 3:
-//                        String id1 = ((Identifier) childExpression.choice).f0.tokenImage;
-//                        boolean local1 = st.isPV(st.state.classID, st.state.methodID, id1);
-//                        if (!local1) {
-//                            type = (ClassType) st.typeF(st.state.classID, id1);
-//                        } else {
-//                            type = (ClassType) st.typePV(st.state.classID, st.state.methodID, id1);
-//                        }
-//                        break;
-//                    case 4:
-//                        type = st.typeC(st.state.classID);
-//                        break;
-//                    case 6:
-//                        String classID1 = ((AllocationExpression) childExpression.choice).f1.f0.tokenImage;
-//                        type = st.typeC(classID1);
-//                        break;
-//                }
-
-
-//                String[] expression = ((BracketExpression) n.f0.f0.choice).f1.accept(this, st);
-//                String retID = parseLastLineVariable(expression);
-//                if (isLocal(retID)) {
-//                    type = (ClassType) st.typePV(st.state.classID, st.state.methodID, retID);
-//                    id = retID;
-//                    break;
-//                }
                 break;
             }
         }
-        String argsSetup = "";
+
         String argsList = "";
         if (n.f4.present()) {
             ArrayList<Expression> args = new ArrayList<>();
@@ -813,15 +688,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String methodSetup = temporary + " = [" + primaryExpression[0] + "]\n" +
                 temporary + " = [" + temporary + "+" + methodOffset + "]\n";
-        // now get method offset
-        // set up argument list
-        // set up method call
-        // return [0]: call offset_temp( primaryExp[0], arglist) [1]: primaryExp[1]
-//        if (naked)
         String call = "call " + temporary + "(" + primaryExpression[0] + argsList + ")\n";
-//        n.f2.accept(this, st);
-//        n.f4.accept(this, st);
-        return new String[]{call, primaryExpression[1] + "\n" + methodSetup + "\n" + argsSetup};
+        return new String[]{call, primaryExpression[1] + argsSetup + "\n" + methodSetup + "\n"};
+//        return new String[]{call, primaryExpression[1] + "\n" + methodSetup + "\n" + argsSetup};
+
     }
 
     /**
@@ -908,13 +778,12 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f4 -> "]"
      */
     public String[] visit(ArrayAllocationExpression n, SymbolTable st) {
-        String[] _ret = null;
         String[] size = n.f3.accept(this, st);
         if (naked(size)) {
             size = wrap(size, st);
         }
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
-        String allocation = temporary + " = :AllocArray(" + size[0] + ")\n";
+        String allocation = temporary + " = call :AllocArray(" + size[0] + ")\n";
         return new String[]{temporary, size[1] + "\n" + allocation};
     }
 
@@ -925,7 +794,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f3 -> ")"
      */
     public String[] visit(AllocationExpression n, SymbolTable st) {
-        String[] _ret = null;
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String allocation = temporary + " = HeapAllocZ(" +
                 st.typeC(n.f1.f0.tokenImage).vapor.allocSize() + ")\n" +
@@ -939,11 +807,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f1 -> Expression()
      */
     public String[] visit(NotExpression n, SymbolTable st) {
-        String[] _ret = null;
-        //check if expression is a literal or a local variable (parameter/variable)
-        //check if expression is a field
-        //check if expression is a
-
         String[] expression = n.f1.accept(this, st);
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         int ifCount = st.getIfCounter();
@@ -951,9 +814,9 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             expression = wrap(expression, st);
         }
         String not = temporary + " = 1\n" +
-                "if0 " + expression[0] + " goto if" + ifCount + "_end\n" +
+                "if0 " + expression[0] + " goto :if" + ifCount + "_end\n" +
                 "\t" + temporary + " = 0\n" +
-                "if" + ifCount + "_end\n";
+                "if" + ifCount + "_end:\n";
         String setup = expression[1] + not;
         return new String[]{temporary, setup};
     }
@@ -967,11 +830,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         return n.f1.accept(this, st);
     }
 
-//    private static String[] wrap(String expression) {
-////            n
-//        return null;
-//    }
-
     private static String parseLastLineVariable(String expression) {
         String[] lines = expression.split("\n");
         for (int i = lines.length - 1; i >= 0; i--) {
@@ -981,13 +839,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         }
         return null;
     }
-
-//    private static boolean isLocal(String id, SymbolTable st) {
-//        if (st.isPV(st.state.classID, st.state.methodID, id))
-//        String[] lines = expression.split(" ", 2);
-//        return lines[1].isBlank();
-//
-//    }
 
     private static String[] wrap(String[] expression, SymbolTable st) {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
@@ -1002,7 +853,6 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             return true;
         if (expression[0].contains("LtS(") || expression[0].contains("MulS(") || expression[0].contains("Sub(") || expression[0].contains("Add("))
             return true;
-        //array lookup, times expression, and expression, message send, array legnth (don't wrap when returning because in the case of assignment statements, you'll need to not have it wrapped so as to not introduce unneeded temporary)
         return false;
     }
 }

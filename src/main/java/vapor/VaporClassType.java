@@ -15,7 +15,16 @@ public class VaporClassType {
     private /*final*/ int size; //in bytes
     private List<VaporMethodType> methods;
     private Map<Symbol, Integer> fieldOffsets;
-//    private
+
+    public VaporClassType(ClassType classType, boolean isMain) {
+        classType.getMethodType("main").vapor = new VaporMethodType(classType.classID());
+        classType.vapor = this;
+    }
+
+    public static void create(Symbol symbol, ClassType classType) {
+        if (classType.isMain()) new VaporClassType(classType, true);
+        else new VaporClassType(classType);
+    }
 
     public String vmt() {
         return vmt;
@@ -24,8 +33,6 @@ public class VaporClassType {
     public int allocSize() {
         return size;
     }
-
-//    public
 
     public VaporClassType(ClassType classType) {
         //create the vmt and do all that.
@@ -67,4 +74,6 @@ public class VaporClassType {
     public int fieldOffset(String id) {
         return fieldOffsets.get(Symbol.symbol(id));
     }
+
+
 }

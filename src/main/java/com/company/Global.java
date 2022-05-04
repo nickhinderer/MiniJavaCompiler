@@ -20,6 +20,14 @@ public class Global {
         classes = new HashMap<>();
     }
 
+
+    public ClassType main() {
+        for (var entry : classes.entrySet()){
+            if (entry.getValue().isMain())
+                return entry.getValue();
+        }
+        return null;
+    }
     public boolean addClass(String className, ClassType classType) {
         Symbol c = Symbol.symbol(className);
         if (classes.get(c) == null) {
