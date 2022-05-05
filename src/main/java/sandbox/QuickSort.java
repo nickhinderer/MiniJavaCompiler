@@ -1,4 +1,4 @@
-package com.company;
+package sandbox;
 
 //oracle: should pass
 class QuickSort{

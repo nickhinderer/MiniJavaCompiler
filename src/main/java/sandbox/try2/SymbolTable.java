@@ -1,4 +1,4 @@
-package try2;
+package sandbox.try2;
 
 public class SymbolTable {
 

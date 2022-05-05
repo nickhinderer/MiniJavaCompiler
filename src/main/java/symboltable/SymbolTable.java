@@ -9,7 +9,6 @@ import typecheck.TypeCheckException;
 import type.enums.TYPE;
 
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,7 +23,9 @@ public class SymbolTable {
     public SymbolTable() {
         table = new Environment();
         state = new Context();
-        ifCounter = 0; whileCounter = 0; nullCounter = 0;
+        ifCounter = 0;
+        whileCounter = 0;
+        nullCounter = 0;
     }
 
     public volatile int ifCounter;
@@ -149,7 +150,7 @@ public class SymbolTable {
 
         }
         if (t1.type == TYPE.PRIMITIVE)
-            if (!((PrimitiveType)t1).subType.equals(((PrimitiveType)t2).subType))
+            if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
                 return false;
         if (t1.type == TYPE.CLASS)
             if (((ClassType) t1).classID().equals("A"))
@@ -177,7 +178,11 @@ public class SymbolTable {
 
 
     public boolean isPV(String classID, String methodID, String id) {
-        return this.getFullClassType(classID).getMethodType(methodID).isPV(id);
+        ClassType classType = this.typeC(classID);
+        MethodType methodType = classType.getMethodType(methodID);
+        boolean b = methodType.isPV(id);
+        return b;
+//        return this.getFullClassType(classID).getMethodType(methodID).isPV(id);
     }
 
 

@@ -1,4 +1,4 @@
-package com.company;
+package sandbox;
 
 import symboltable.SymbolTable;
 

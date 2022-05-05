@@ -1,7 +1,8 @@
-package com.company;
+package sandbox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 class C {
@@ -72,8 +73,15 @@ public class JavaTest {
                 System.out.println("\n\n\n\n");
         }
         ArrayList a = new ArrayList<>(Arrays.asList(1, 2, 3, 5));
-        a.add(5, 4);
-        System.out.println(a.toString());
+//        a.add(5, 4);
+//        System.out.println(a.toString());
+
+        HashMap<Integer, Character> m1 = new HashMap();
+
+        m1.put(1, 'a');
+        HashMap<Integer, Character> m2 = new HashMap(m1);
+        m1.put(2, 'b');
+        m2.put(3,'c');
     }
 
 
