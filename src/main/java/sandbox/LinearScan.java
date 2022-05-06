@@ -131,8 +131,8 @@ public class LinearScan {
 //        CFG.edge(n6, n1);
 
 
-        LS.linearScan(CFG);
-        LS.printSpillsAndRegisterMap(CFG);
+        new LS().linearScan(CFG);
+        new LS().printSpillsAndRegisterMap(CFG);
         //helper methods for intersection, go back and read the toolbox
         //and read those regalloc.vaporm files
         //and more linear examples by hand
@@ -146,49 +146,55 @@ public class LinearScan {
         //now you just gotta do this part and get this info from a VProgram, and then redo hw4 (calls, signatures, backup callee saved, backup caller saved, change variable names with registers and insert spill pionts, thats it, you have the middle portion done)
     }
 
-    static class LS {
-        static Graph CFG;
-        static List<Variable.Interval> liveIntervals = new ArrayList<>();
-        static Registers registers = new Registers();
-        static List<Spill> spills = new ArrayList<>();
-        static int time, R = 6;
 
-        static Active active = new Active();
+}
+class LS {
+    Graph CFG;
+    List<Variable.Interval> liveIntervals = new ArrayList<>();
+    Registers registers = new Registers();
+    List<Spill> spills = new ArrayList<>();
+    int time, R = 6;
 
-        static void linearScan(Graph CFG) {
-            LS.CFG = CFG;
-            sortLiveIntervals(CFG);
-            for (time = 0; time < CFG.nodes.size(); time++) {
-                for (Variable.Interval i : liveIntervals)
-                    if (i._start == time) {
+    Active active;
+
+    void linearScan(Graph CFG) {
+        spills = new ArrayList<>();
+        registers = new Registers();
+        liveIntervals = new ArrayList<>();
+        active = new Active();
+        this.CFG = CFG;
+        sortLiveIntervals(CFG);
+        for (time = 0; time < CFG.nodes.size(); time++) {
+            for (Variable.Interval i : liveIntervals)
+                if (i._start == time) {
 //                        if (i.start.num == time) {
-                        expireOldIntervals(i._start);
+                    expireOldIntervals(i._start);
 //                        expireOldIntervals(i.start.num);
-                        if (active.length == R) {
-                            spillAtInterval(i);
-                        } else {
-                            registers.add(i);
-                            active.insert(i);
-                        }
+                    if (active.length == R) {
+                        spillAtInterval(i);
                     } else {
-                        expireOldIntervals(time);
+                        registers.add(i);
+                        active.insert(i);
                     }
-                CFG.nodes.get(time).map = registers.record();
+                } else {
+                    expireOldIntervals(time);
+                }
+            CFG.nodes.get(time).map = registers.record();
 
+        }
+    }
+
+
+    void expireOldIntervals(int time) {
+        for (int index = 0; index < active.length; index++) {
+            Variable.Interval j = active.get(index);
+            if (j != null) {
+//                    if (j.end.num >= time)
+                if (j._end >= time) return;
+                active.expire(index);
+                registers.remove(j);
             }
         }
-
-
-        static void expireOldIntervals(int time) {
-            for (int index = 0; index < active.length; index++) {
-                Variable.Interval j = active.get(index);
-                if (j != null) {
-//                    if (j.end.num >= time)
-                    if (j._end >= time) return;
-                    active.expire(index);
-                    registers.remove(j);
-                }
-            }
 
 
 //            for (Variable.Interval j : active) {
@@ -200,34 +206,34 @@ public class LinearScan {
 //                active.remove(j);
 //                registers.remove(j);
 //            }
-        }
+    }
 
-        static void spillAtInterval(Variable.Interval i) {
-            Variable.Interval spill = active.get(active.length - 1);
-            if (spill._end > i._end) {
+    void spillAtInterval(Variable.Interval i) {
+        Variable.Interval spill = active.get(active.length - 1);
+        if (spill._end > i._end) {
 //            if (spill.end.num > i.end.num) {
-                registers.remove(spill);
-                registers.add(i);
-                Spill location = new Spill(spill, CFG.node(time));
-                spills.add(location);
-                active.expire(spill);
-                active.insert(i);
-            } else {
-                Spill location = new Spill(i, CFG.node(time));
-                spills.add(location);
-            }
+            registers.remove(spill);
+            registers.add(i);
+            Spill location = new Spill(spill, CFG.node(time));
+            spills.add(location);
+            active.expire(spill);
+            active.insert(i);
+        } else {
+            Spill location = new Spill(i, CFG.node(time));
+            spills.add(location);
         }
+    }
 
-        static void sortLiveIntervals(Graph CFG) {
-            for (Variable.Interval interval : CFG.intervals) {
-                int i;
-                for (i = 0; i < liveIntervals.size(); i++)
+    void sortLiveIntervals(Graph CFG) {
+        for (Variable.Interval interval : CFG.intervals) {
+            int i;
+            for (i = 0; i < liveIntervals.size(); i++)
 //                    if (interval.start.num < liveIntervals.get(i).start.num) break;
-                    if (interval._start < liveIntervals.get(i)._start) break;
+                if (interval._start < liveIntervals.get(i)._start) break;
 
-                liveIntervals.add(i, interval);
-            }
+            liveIntervals.add(i, interval);
         }
+    }
 
 //        static void activeInsert(Variable.Interval interval) {
 //            int t;
@@ -236,18 +242,16 @@ public class LinearScan {
 //            active.add(t, interval);
 //        }
 
-        static void printSpillsAndRegisterMap(Graph CFG) {
-            for (Spill spill : spills) {
-                System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", spill.variable.name, spill.backupPoint.num, spill.location);
+    void printSpillsAndRegisterMap(Graph CFG) {
+        for (Spill spill : spills) {
+            System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", spill.variable.name, spill.backupPoint.num, spill.location);
 //                System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[%d]\nlocal[%d] becomes free after node %d\n\n", spill.variable.name, spill.backupPoint.num, spill.location, spill.location, spill.variable.interval.end.num);
-            }
-            for (Node node : CFG.nodes) {
-                System.out.print(node);
-            }
+        }
+        for (Node node : CFG.nodes) {
+            System.out.print(node);
         }
     }
 }
-
 class Active {
     Variable.Interval[] active;
     int length;
