@@ -148,6 +148,8 @@ public class LinearScan {
 
 
 }
+
+
 class LS {
     Graph CFG;
     List<Variable.Interval> liveIntervals = new ArrayList<>();
