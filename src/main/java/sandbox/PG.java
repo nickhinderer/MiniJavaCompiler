@@ -1,7 +1,5 @@
 package sandbox;
 
-import sandbox.LinearScan.LS;
-
 import cs132.util.ProblemException;
 import cs132.vapor.ast.*;
 import cs132.vapor.parser.VaporParser;
@@ -38,7 +36,7 @@ public class PG {
         InputStream in = null;
         try {
 //            in = System.in;
-            in = new FileInputStream("tests/translate/vapor/LinearSearch.vapor");
+            in = new FileInputStream("tests/translate/vapor/LinkedList.vapor");
 //        } catch (Exception e) {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -58,14 +56,20 @@ public class PG {
             PG pg = new PG();
             List<Graph> functions = pg.createGraph(p);
             System.out.println();
-            LinearScan.LS.linearScan(functions.get(1));
-            LinearScan.LS.printSpillsAndRegisterMap(functions.get(1));
+            for (Graph function : functions) {
+                new LS().linearScan(function);
+                new LS().printSpillsAndRegisterMap(function);
+            }
+//            LinearScan.LS.linearScan(functions.get(17));
+//            LinearScan.LS.printSpillsAndRegisterMap(functions.get(17));
+            (new LS()).linearScan(functions.get(5));
+            new LS().printSpillsAndRegisterMap(functions.get(5));
         }
     }
 
     public List<Graph> createGraph(VaporProgram p) {
         List<Graph> graphs = new LinkedList<>();
-        VMVisitor vmv = new VMVisitor();
+        DUVisitor duv = new DUVisitor();
         for (VFunction F : p.functions) {
             Graph g = new Graph();
             g.function = F;
@@ -75,7 +79,7 @@ public class PG {
             g.node(parameters);
             for (int i = 0; i < F.body.length; i++) {
                 VInstr instr = F.body[i];
-                Node node = instr.accept(i + 1, vmv);
+                Node node = instr.accept(i + 1, duv);
                 g.node(node);
             }
 
@@ -95,8 +99,8 @@ public class PG {
 }
 
 
-class VMVisitor extends VInstr.VisitorPR<Integer, Node, RuntimeException> {
-    public VMVisitor() {
+class DUVisitor extends VInstr.VisitorPR<Integer, Node, RuntimeException> {
+    public DUVisitor() {
     }
 
     public Node visit(Integer num, VAssign assign) {

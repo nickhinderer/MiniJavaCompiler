@@ -151,7 +151,7 @@ public class LinearScan {
         static List<Variable.Interval> liveIntervals = new ArrayList<>();
         static Registers registers = new Registers();
         static List<Spill> spills = new ArrayList<>();
-        static int time, R = 2;
+        static int time, R = 6;
 
         static Active active = new Active();
 

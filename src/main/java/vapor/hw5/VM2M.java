@@ -267,6 +267,5 @@ class MIPSVisitor extends VInstr.VisitorR<String, RuntimeException> {
     public String visit(VGoto _goto) {
         String label = _goto.target.toString().substring(1);
         return String.format("  j %s", label);
-
     }
 }
