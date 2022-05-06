@@ -12,13 +12,16 @@ import java.util.List;
 
 public class LinearScan {
     Graph CFG;
-    List<Variable.Interval> liveIntervals = new ArrayList<>();
-    Registers registers = new Registers();
-    List<Spill> spills = new ArrayList<>();
-    int time, R = 6;
+    List<Variable.Interval> liveIntervals;// = new ArrayList<>();
+    Registers registers; // = new Registers();
+    List<Spill> spills;// = new ArrayList<>();
+    int time, R = 2;
 
     Active active;
 
+//    LinearScan() {
+//        spills = new ArrayList<>();
+//    }
     void linearScan(Graph CFG) {
         spills = new ArrayList<>();
         registers = new Registers();
@@ -28,10 +31,8 @@ public class LinearScan {
         sortLiveIntervals(CFG);
         for (time = 0; time < CFG.nodes.size(); time++) {
             for (Variable.Interval i : liveIntervals)
-                if (i._start == time) {
-//                        if (i.start.num == time) {
-                    expireOldIntervals(i._start);
-//                        expireOldIntervals(i.start.num);
+                if (i.start == time) {
+                    expireOldIntervals(i.start);
                     if (active.length == R) {
                         spillAtInterval(i);
                     } else {
@@ -41,9 +42,10 @@ public class LinearScan {
                 } else {
                     expireOldIntervals(time);
                 }
-            CFG.nodes.get(time).map = registers.record();
-
+            CFG.nodes.get(time).record = registers.record();
+//            CFG.nodes.get(time).record.
         }
+        CFG.spills = spills;
     }
 
 
@@ -51,8 +53,7 @@ public class LinearScan {
         for (int index = 0; index < active.length; index++) {
             Variable.Interval j = active.get(index);
             if (j != null) {
-//                    if (j.end.num >= time)
-                if (j._end >= time) return;
+                if (j.end >= time) return;
                 active.expire(index);
                 registers.remove(j);
             }
@@ -72,7 +73,7 @@ public class LinearScan {
 
     void spillAtInterval(Variable.Interval i) {
         Variable.Interval spill = active.get(active.length - 1);
-        if (spill._end > i._end) {
+        if (spill.end > i.end) {
 //            if (spill.end.num > i.end.num) {
             registers.remove(spill);
             registers.add(i);
@@ -91,7 +92,7 @@ public class LinearScan {
             int i;
             for (i = 0; i < liveIntervals.size(); i++)
 //                    if (interval.start.num < liveIntervals.get(i).start.num) break;
-                if (interval._start < liveIntervals.get(i)._start) break;
+                if (interval.start < liveIntervals.get(i).start) break;
 
             liveIntervals.add(i, interval);
         }
@@ -104,9 +105,10 @@ public class LinearScan {
 //            active.add(t, interval);
 //        }
 
-    void printSpillsAndRegisterMap(Graph CFG) {
-        for (Spill spill : spills) {
-            System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", spill.variable.name, spill.backupPoint.num, spill.location);
+    static void printSpillsAndRegisterMap(Graph CFG) {
+        for (Spill spill : CFG.spills) {
+            System.out.print(spill);
+//            System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", spill.variable.name, spill.backupPoint.num, spill.location);
 //                System.out.printf("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[%d]\nlocal[%d] becomes free after node %d\n\n", spill.variable.name, spill.backupPoint.num, spill.location, spill.location, spill.variable.interval.end.num);
         }
         for (Node node : CFG.nodes) {

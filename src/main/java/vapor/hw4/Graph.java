@@ -18,14 +18,16 @@ public class Graph {
     List<Node> nodes;
     Set<Variable> variables;
     List<Variable.Interval> intervals;
-    List<Graph.Edge> edges;
+//    List<Graph.Edge> edges;
     VFunction function;
+    List<Spill> spills;
 
     Graph() {
         nodes = new ArrayList<>();
         variables = new HashSet<>();
         intervals = new ArrayList<>();
-        edges = new ArrayList<>();
+//        edges = new ArrayList<>();
+        spills = new ArrayList<>();
     }
 
     void variable(Variable v) {
@@ -37,10 +39,10 @@ public class Graph {
         nodes.add(n);
     }
 
-    void edge(Node from, Node to) {
-        Graph.Edge e = new Graph.Edge(from, to);
-        edges.add(e);
-    }
+//    void edge(Node from, Node to) {
+//        Graph.Edge e = new Graph.Edge(from, to);
+//        edges.add(e);
+//    }
 
     Node node(int time) {
         for (Node node : nodes) {
@@ -65,17 +67,17 @@ public class Graph {
         }
     }
 
-    static class Edge {
-        Node from;
-        Node to;
-
-        Edge(Node from, Node to) {
-            this.from = from;
-            this.to = to;
-            from.successors.add(to);
-            to.predecessors.add(from);
-        }
-    }
+//    static class Edge {
+//        Node from;
+//        Node to;
+//
+//        Edge(Node from, Node to) {
+//            this.from = from;
+//            this.to = to;
+//            from.successors.add(to);
+//            to.predecessors.add(from);
+//        }
+//    }
 }
 class Active {
     Variable.Interval[] active;
@@ -119,11 +121,11 @@ class Active {
         }
         active = Arrays.copyOf(active, active.length + 1);
 
-        int end = interval._end, index;
+        int end = interval.end, index;
 //        int end = interval.end.num, index;
 
         for (index = 0; index < length; index++) {
-            if (end < active[index]._end)
+            if (end < active[index].end)
 //                if (end < active[index].end.num)
 
                 break;
@@ -178,42 +180,40 @@ class Variable {
     }
 
     static class Interval {
-        Node start;
-        Node end;
         Variable variable;
 
-        Interval(Variable variable, Node start, Node end) {
-            this.variable = variable;
-            this.start = start;
-            this.end = end;
-        }
+//        Interval(Variable variable, int start, int end) {
+//            this.variable = variable;
+//            this.start = start;
+//            this.end = end;
+//        }
 
-        int _start;
-        int _end;
+        int start;
+        int end;
 
         Interval(Variable variable) {
             this.variable = variable;
-            _start = -1;
-            _end = -1;
+            start = -1;
+            end = -1;
         }
 
         Interval(Variable variable, int start) {
             this.variable = variable;
-            this._start = start;
-            this._end = -1;
+            this.start = start;
+            this.end = -1;
         }
 
         public Interval(Variable variable, int firstDef, int lastUse) {
             this.variable = variable;
-            this._start = firstDef;
-            this._end = lastUse;
+            this.start = firstDef;
+            this.end = lastUse;
         }
     }
 
-    void interval(Node start, Node end) {
+    void interval(int start, int end) {
         this.interval = new Variable.Interval(this, start, end);
-        interval._start = start.num;
-        interval._end = end.num;
+        interval.start = start;
+        interval.end = end;
     }
 
     void interval(int start) {
@@ -239,7 +239,7 @@ class Node {
     List<Variable> params; //even though 99% of the time it is only one def in a statement, you have to do this rather than 'Variable def' so that you can cover the case of parameters which are 'defined' (live) going into the funct              , or do that
     List<Variable> use;
     List<Variable> variables;
-    Record map;
+    Record record;
     VInstr instruction;
 
     Node(int num) {
@@ -253,13 +253,13 @@ class Node {
     @Override
     public String toString() {
         StringBuilder output = new StringBuilder(String.format("node %d\n", this.num + 1));
-        this.map.registers.forEach((k, v) -> {
+        this.record.registers.forEach((k, v) -> {
             if (v != null) output.append(String.format("Variable: \033[;34m%s\033[0m -> \033[;31m%s\033[0m\n", k, v));
         });
         output.append("Free Registers: [");
-        for (int i = 0; i < this.map.free.size(); i++) {
-            Register r = this.map.free.get(i);
-            if (i == this.map.free.size() - 1) output.append(String.format("\033[;32m%s\033[0m", r));
+        for (int i = 0; i < this.record.free.size(); i++) {
+            Register r = this.record.free.get(i);
+            if (i == this.record.free.size() - 1) output.append(String.format("\033[;32m%s\033[0m", r));
             else output.append(String.format("\033[;32m%s\033[0m, ", r));
         }
         output.append("]\n\n");
@@ -319,17 +319,19 @@ class Registers {
 class Record {
     Map<String, Register> registers;
     List<Register> free;
+    Spill spill;
 
     //    List<Spill> spills;
     Record() {
         registers = new HashMap<>();
         free = new LinkedList<>();
+        spill = null;
     }
 }
 
 class Spill {
     Node backupPoint;
-    Node restorePoint;  //this is found by just visiting the node and realizing you have some variables in there and they are not all mapped to a register, in that case
+//    Node restorePoint;  //this is found by just visiting the node and realizing you have some variables in there and they are not all mapped to a register, in that case
     // you just search trough the spills for your variable and find its stack location and restore it using the temp v1 register
 //du pairs, find last use then go backwards to first def
     //and then if not in register map, just look at spill map instead (i.e. you don't really need 'restorePoint', that will just be in teh list of spills and
@@ -340,5 +342,10 @@ class Spill {
     public Spill(Variable.Interval i, Node backupPoint) {
         this.backupPoint = backupPoint;
         this.variable = i.variable;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", this.variable.name, this.backupPoint.num, this.location);
     }
 }

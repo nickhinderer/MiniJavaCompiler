@@ -4,7 +4,6 @@ import parser.MiniJavaParser;
 import syntaxtree.*;
 import typecheck.TypeCheckException;
 import typecheck.TypeCheckVisitor;
-import vapor.VaporVisitor;
 import visitor.*;
 
 public class J2V {

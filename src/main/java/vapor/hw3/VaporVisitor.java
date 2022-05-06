@@ -1,4 +1,4 @@
-package vapor;
+package vapor.hw3;
 
 import symboltable.SymbolTable;
 import type.VaporClassType;

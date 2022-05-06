@@ -55,13 +55,13 @@ public class V2VM {
             List<Graph> functions = createGraph(p);
             System.out.println();
             for (Graph function : functions) {
-                new LinearScan().linearScan(function);
-                new LinearScan().printSpillsAndRegisterMap(function);
+//                new LinearScan().linearScan(function);
+//                new LinearScan().printSpillsAndRegisterMap(function);
             }
 //            LinearScan.LS.linearScan(functions.get(17));
 //            LinearScan.LS.printSpillsAndRegisterMap(functions.get(17));
-            new LinearScan().linearScan(functions.get(5));
-            new LinearScan().printSpillsAndRegisterMap(functions.get(5));
+            new LinearScan().linearScan(functions.get(1));
+            new LinearScan().printSpillsAndRegisterMap(functions.get(1));
         }
 
     }
