@@ -1,0 +1,41 @@
+//oracle: should pass
+class MO {
+
+    public static void main(String[] args) {
+        A a;
+        int b;
+        C c;
+        B d;
+        a = new A();
+        b = a.method(1);
+        d = new B();
+        c = new C();
+        a = c.method(d);
+
+    }
+}
+
+class A {
+    int a;
+    int b;
+    public int method(int a) {
+        return 1;
+    }
+}
+
+class B extends A {
+    boolean b;
+    int c;
+    public int method(int b) {
+        return 0;
+    }
+}
+
+
+class C {
+    public A method(A a) {
+        a = new A();
+        return a;
+        //like for exapmle have a case where you try to return a subtype which shouldn't pass
+    }
+}

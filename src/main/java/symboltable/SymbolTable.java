@@ -142,7 +142,7 @@ public class SymbolTable {
 //    }
 
 
-    public boolean subType(Type t1, Type t2) {
+    public boolean subType(Type t2, Type t1) {
         //add same type method
         if (t1.type != t2.type) {
 //            throw new TypeCheckException("foo");
@@ -152,9 +152,19 @@ public class SymbolTable {
         if (t1.type == TYPE.PRIMITIVE)
             if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
                 return false;
-        if (t1.type == TYPE.CLASS)
-            if (((ClassType) t1).classID().equals("A"))
-                return false;
+        if (t1.type == TYPE.CLASS) {
+            if (((ClassType) t1).classID().equals(((ClassType) t2).classID()))
+                return true;
+
+            Set<String> parents = new HashSet<>();
+            ClassType currentClass = (ClassType) this.getFullClassType(((ClassType) t2).classID());
+            while (currentClass.hasParent()) {
+                parents.add(currentClass.parentName());
+                currentClass = (ClassType) this.typeC(currentClass.parentName());
+            }
+            ClassType otherClass = (ClassType) t1;
+            return parents.contains(otherClass.classID());
+        }
         return true;
     }
 
@@ -186,7 +196,7 @@ public class SymbolTable {
     }
 
 
-    private ClassType getFullClassType(String classID) {
+    public ClassType getFullClassType(String classID) {
         ClassType t = table.type(classID);
         ClassType full = new ClassType(t);
         while (t.parentName() != null) {
@@ -342,7 +352,8 @@ public class SymbolTable {
             }
             ClassType full = getFullClassType(entry.getValue().classID());
             if (full == null)
-                throw new TypeCheckException("Rule xx inheritance violated");
+                throw new TypeCheckException();
+//            throw new TypeCheckException("Rule xx inheritance violated");
             updated.put(entry.getKey(), full);
         }
         table.setClasses(updated);

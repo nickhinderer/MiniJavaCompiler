@@ -1,4 +1,3 @@
-
 const vmt_BBS
   :BBS.Start
   :BBS.Sort
@@ -290,3 +289,4 @@ func AllocArray(size)
   v = HeapAllocZ(bytes)
   [v] = size
   ret v
+

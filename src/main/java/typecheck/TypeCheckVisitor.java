@@ -6,7 +6,7 @@ import type.ArrayType;
 import type.enums.TYPE;
 import visitor.GJDepthFirst;
 import type.Type;
-import type.enums.TYPE;
+
 import java.util.Enumeration;
 import type.*;
 public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
@@ -49,11 +49,18 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
 //        n.f2.accept(this, st);
         if (n.f8.accept(this, st) == null)
             return null;
-        Type t = n.f10.accept(this, st); //also check and make sure declared and actual return type match
-        if (t == null)
+        Type actualReturnType = n.f10.accept(this, st); //also check and make sure declared and actual return type match
+        if (actualReturnType == null)
             return null;
-        if (!st.subType(st.typeM(st.state.classID, st.state.methodID).getReturnType(), t))
+        Type declaredReturnType = st.typeM(st.state.classID, st.state.methodID).getReturnType();
+        if (declaredReturnType.type != actualReturnType.type)
             return null;
+        if (declaredReturnType.type == TYPE.PRIMITIVE)
+            if (!((PrimitiveType) declaredReturnType).subType.equals(((PrimitiveType) actualReturnType).subType))
+                return null;
+        if (declaredReturnType.type == TYPE.CLASS)
+            if (!((ClassType) declaredReturnType).classID().equals(((ClassType) actualReturnType).classID()))
+                return null;
         st.state.method=false;
         return new TypeChecksType();
     }
@@ -153,7 +160,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         Type t2 = n.f2.accept(this, st);
         if (t1 == null || t2 == null)
             return null;
-        if (t2.type != t1.type)
+
+        if (!st.subType(t2, t1))
             return null;
         if (t1.type == TYPE.PRIMITIVE)
             if (!((PrimitiveType) t1).subType.equals(((PrimitiveType) t2).subType))
@@ -192,6 +200,10 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         boolean checks = true;
         if ( n.f4.present() )
             checks = validateParameters((ExpressionList) n.f4.node, m, st);
+        else {
+            if (m.parameterCount() != 0)
+                return null;
+        }
         if (checks)
             return m.getReturnType();
         else
@@ -740,8 +752,8 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
     public Type visit(WhileStatement n, SymbolTable st) {
         Type t1 = n.f2.accept(this, st);
         if (!t1.equals(new PrimitiveType("boolean"))) {
-//            return null;
-            throw new TypeCheckException("while expression is not boolean");
+            return null;
+//            throw new TypeCheckException("while expression is not boolean");
         }
 //            throw new TypeCheckException("26 violated");
         Type t2 = n.f4.accept(this, st);

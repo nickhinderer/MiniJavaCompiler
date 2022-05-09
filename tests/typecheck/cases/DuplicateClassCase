@@ -22,7 +22,12 @@ class B {
 
 
 class A {
-
+    public int method(int a) {
+    return 2;
+    }
+    public int method2(int a) {
+    return 1;
+    }
 }
 
 class B extends A {
@@ -32,8 +37,8 @@ class B extends A {
 	boolean d;
 	boolean f;
 	int x;
-	public int method(D d) {
-		int q;
-		return 1;
-	}
+	//public int method(D d) {
+	//	int q;
+	//	return 1;
+	//}
 }
