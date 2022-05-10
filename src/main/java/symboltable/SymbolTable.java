@@ -387,6 +387,8 @@ public class SymbolTable {
                             if (!parent.getMethods().containsValue(methodType)) {
                                 this.printMethod(methodID, methodType);
                             }
+                        } else {
+                            this.printMethod(methodID, methodType);
                         }
 
                     }

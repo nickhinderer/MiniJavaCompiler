@@ -17,13 +17,15 @@ public class MethodType extends Type {
     public String classID;
 
 
-    public MethodType(MethodType other) {
+    public MethodType(MethodType other, String classID) {
         this.parameters = new HashMap<>(other.parameters);
         this.returnType = other.returnType;
         this.order = new ArrayList<>(other.order);
         this.variables = new HashMap<>(other.variables);
         this.type = TYPE.METHOD;
+        this.classID = classID;
     }
+
     public MethodType(Type returnType, String currentClass) {
         this.returnType = returnType;
         parameters = new HashMap<>();

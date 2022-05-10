@@ -3,7 +3,6 @@ class Trick {
         int i;
         int j;
         int k;
-        boolean l;
         B b;
         i = 1;
         j = 100;
@@ -22,11 +21,6 @@ class Trick {
             //
             //System.out.println(i);
             //i = new B().getK();
-            k = new D().method(1);
-            l = new D().method2();
-            k = new D().setK(1);
-            k = new D().getK();
-
         }
 
     }
@@ -40,32 +34,11 @@ class A {
         }
         return i;
     }
-    public int getK() {
-        return k;
-    }
-
 }
 
 
 class B extends A {
-    public int setK(int r) {
-        k = r;
-        //k = this.method(r);
-        return 0;
-    }
-    }
-
-
-class C extends B {
-    int k;
-    public int method(int i) {
-        return 222;
-    }
-}
-
-class D extends C {
-    int k;
-    public boolean method2() {
-        return false;
+    public int method(int k) {
+        return 1;
     }
 }

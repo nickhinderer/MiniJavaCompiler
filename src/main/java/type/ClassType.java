@@ -163,8 +163,9 @@ public class ClassType extends Type {
             if (this.methods.containsKey(entry.getKey())) {
                 if (!this.methods.get(entry.getKey()).equals(parent.methods.get(entry.getKey())))
                     return false;
-                else
-                    this.methods.put(entry.getKey(), entry.getValue());
+                else {
+//                    this.methods.put(entry.getKey(), new MethodType(entry.getValue(), this.classID()));
+                }
             } else {
                     this.methods.put(entry.getKey(), /*new MethodType(*/entry.getValue()); //copy the method right here and make it
             }
