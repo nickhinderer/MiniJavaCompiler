@@ -32,9 +32,9 @@ public class VM2M {
         InputStream in = null;
         try {
             in = System.in;
-            in = new FileInputStream("tests/translate/vaporm/TreeVisitor.opt.vaporm");
-//        } catch (Exception e) {
-        } catch (FileNotFoundException e) {
+//            in = new FileInputStream("tests/translate/vaporm/TreeVisitor.opt.vaporm");
+        } catch (Exception e) {
+//        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
         VaporProgram p;
@@ -145,7 +145,12 @@ class MIPSVisitor extends VInstr.VisitorR<String, RuntimeException> {
                     if (literal)
                         return String.format("  li $t8 %s\n  sw $t8 %d($sp)", source, index); //shouldn't really ever hit this case
 //                    return String.format("li $t8 %s\n  sw $t8 -%d($sp)", source, index + 12 + F.stack.local * 4); //shouldn't really ever hit this case //yoooo this is the complex way he said to avoid, and it aint even that bad
-                    else return String.format("  sw %s %d($sp)", source, index); //shouldn't really ever hit this case
+                    else {
+                        if (source.charAt(0) == ':')
+                            return String.format("  la $t8 %s\n  sw $t8 %d($sp)", source.substring(1), index); //shouldn't really ever hit this case
+                        else
+                            return String.format("  sw %s %d($sp)", source, index); //shouldn't really ever hit this case
+                    }
 //                    return String.format("lw %s -%d($sp)", source, index + 12 + F.stack.local * 4); //shouldn't really ever hit this case
             }
         } else {

@@ -13,11 +13,11 @@ public class Graph {
     List<Node> nodes;
     Set<Variable> variables;
     List<Variable.Interval> intervals;
-    VFunction original;
+    public VFunction original;
     List<Spill> spills;
     Set<Variable> spilledVariables;
 
-    Graph() {
+    public Graph() {
         nodes = new ArrayList<>();
         variables = new HashSet<>();
         intervals = new ArrayList<>();
@@ -30,7 +30,7 @@ public class Graph {
         intervals.add(v.interval);
     }
 
-    void node(Node n) { //add node
+    public void node(Node n) { //add node
         nodes.add(n);
     }
 
@@ -121,155 +121,6 @@ class Active {
     }
 }
 
-class Variable {
-    String name;
-    Variable.Interval interval;
-    int firstDef;
-    int lastUse;
-    int spilled; //node index variable was spilled in
-    Set<Node> used; //set of nodes used in
-    Set<Node> defined; //set of nodes defined in
-
-    static Dictionary<String, Variable> dict = new Hashtable<>();
-
-
-    public static Variable variable(String id) {
-        String u = id.intern();
-        Variable variable = dict.get(u);
-        if (variable == null) {
-            variable = new Variable(u);
-            dict.put(u, variable);
-        }
-        return variable;
-    }
-
-    public static void reset() {
-        dict = new Hashtable<>();
-    }
-
-    private Variable(String name) {
-        this.name = name;
-        firstDef = -1;
-        lastUse = -1;
-    }
-
-
-//    @Override
-//    public boolean equals(Object other) {
-//        if (other instanceof String)
-//            return other.equals(this.name);
-//        else
-//            return super.equals(other);
-//            return false;
-//        return
-//    }
-    //not needed because variables in the same function are literally the same object
-
-    static class Interval {
-        Variable variable;
-        int start;
-        int end;
-
-        Interval(Variable variable) {
-            this.variable = variable;
-            start = -1;
-            end = -1;
-        }
-
-        Interval(Variable variable, int start) {
-            this.variable = variable;
-            this.start = start;
-            this.end = -1;
-        }
-
-        public Interval(Variable variable, int firstDef, int lastUse) {
-            this.variable = variable;
-            this.start = firstDef;
-            this.end = lastUse;
-        }
-    }
-
-    void interval(int start, int end) {
-        this.interval = new Variable.Interval(this, start, end);
-        interval.start = start;
-        interval.end = end;
-    }
-
-    void interval(int start) {
-        this.interval = new Variable.Interval(this, start);
-    }
-
-    void interval() {
-        this.interval = new Variable.Interval(this, firstDef, lastUse);
-    }
-
-    Variable.Interval interval(boolean differentiate) {
-//        if (lastUse == -1)
-//            lastUse = firstDef;
-        this.interval = new Variable.Interval(this, firstDef, lastUse);
-        return interval;
-    }
-
-}
-
-class Node {
-    int num;
-//    List<Node> predecessors;
-//    List<Node> successors;
-    Variable def;
-    List<Variable> params; //even though 99% of the time it is only one def in a statement, you have to do this rather than 'Variable def' so that you can cover the case of parameters which are 'defined' (live) going into the funct              , or do that
-    List<Variable> use;
-    List<Variable> variables;
-    Record record;
-    VInstr instruction;
-    boolean expanded;
-    List<VInstr> expansion;
-    boolean used$v1;
-    Set<Variable> spilled;
-
-    Node(int num) {
-        this.num = num;
-//        this.predecessors = new ArrayList<>();
-//        this.successors = new ArrayList<>();
-        this.use = new ArrayList<>();
-        this.variables = new ArrayList<>();
-        this.spilled = new HashSet<>();
-        expanded = false;
-        used$v1 = false;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder output = new StringBuilder(String.format("node %d\n", this.num /*+ 1*/));
-        this.record.registers.forEach((k, v) -> {
-            if (v != null) output.append(String.format("Variable: \033[;34m%s\033[0m -> \033[;31m%s\033[0m\n", k, v));
-        });
-        output.append("Free Registers: [");
-        for (int i = 0; i < this.record.free.size(); i++) {
-            Register r = this.record.free.get(i);
-            if (i == this.record.free.size() - 1) output.append(String.format("\033[;32m%s\033[0m", r));
-            else output.append(String.format("\033[;32m%s\033[0m, ", r));
-        }
-        output.append("]\n\n");
-        return output.toString();
-    }
-
-    void addParameter(Variable variable) {
-        this.params.add(variable);
-        this.variables.add(variable);
-    }
-
-    void addUse(Variable variable) {
-        this.use.add(variable);
-        this.variables.add(variable);
-    }
-
-    void addDef(Variable variable) {
-        this.def = variable;
-        this.variables.add(variable);
-    }
-}
-
 class Registers {
     HashMap<Variable, Register> registerMap;
     List<Register> free;
@@ -343,5 +194,63 @@ class Spill {
     @Override
     public String toString() {
         return String.format("Spilled Variable: \033[;34m%s\033[0m at node/instruction \033[;31m%d\033[0m at local[\033[;32m%d\033[0m]\n\n", this.variable.name, this.backupPoint.num, this.location);
+    }
+}
+
+class Node {
+    int num;
+    //    List<Node> predecessors;
+//    List<Node> successors;
+    Variable def;
+    public List<Variable> params; //even though 99% of the time it is only one def in a statement, you have to do this rather than 'Variable def' so that you can cover the case of parameters which are 'defined' (live) going into the funct              , or do that
+    List<Variable> use;
+    List<Variable> variables;
+    Record record;
+    VInstr instruction;
+    boolean expanded;
+    List<VInstr> expansion;
+    boolean used$v1;
+    Set<Variable> spilled;
+
+    public Node(int num) {
+        this.num = num;
+//        this.predecessors = new ArrayList<>();
+//        this.successors = new ArrayList<>();
+        this.use = new ArrayList<>();
+        this.variables = new ArrayList<>();
+        this.spilled = new HashSet<>();
+        expanded = false;
+        used$v1 = false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder(String.format("node %d\n", this.num /*+ 1*/));
+        this.record.registers.forEach((k, v) -> {
+            if (v != null) output.append(String.format("Variable: \033[;34m%s\033[0m -> \033[;31m%s\033[0m\n", k, v));
+        });
+        output.append("Free Registers: [");
+        for (int i = 0; i < this.record.free.size(); i++) {
+            Register r = this.record.free.get(i);
+            if (i == this.record.free.size() - 1) output.append(String.format("\033[;32m%s\033[0m", r));
+            else output.append(String.format("\033[;32m%s\033[0m, ", r));
+        }
+        output.append("]\n\n");
+        return output.toString();
+    }
+
+    public void addParameter(Variable variable) {
+        this.params.add(variable);
+        this.variables.add(variable);
+    }
+
+    void addUse(Variable variable) {
+        this.use.add(variable);
+        this.variables.add(variable);
+    }
+
+    void addDef(Variable variable) {
+        this.def = variable;
+        this.variables.add(variable);
     }
 }

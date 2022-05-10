@@ -6,9 +6,7 @@ import cs132.vapor.parser.VaporParser;
 
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class V2VM {
 
@@ -114,4 +112,94 @@ public class V2VM {
     }
 
 //    static void
+}
+class Variable {
+    String name;
+    Interval interval;
+    int firstDef;
+    int lastUse;
+    int spilled; //node index variable was spilled in
+    Set<Node> used; //set of nodes used in
+    Set<Node> defined; //set of nodes defined in
+
+    static Dictionary<String, Variable> dict = new Hashtable<>();
+
+
+    public static Variable variable(String id) {
+        String u = id.intern();
+        Variable variable = dict.get(u);
+        if (variable == null) {
+            variable = new Variable(u);
+            dict.put(u, variable);
+        }
+        return variable;
+    }
+
+    public static void reset() {
+        dict = new Hashtable<>();
+    }
+
+    private Variable(String name) {
+        this.name = name;
+        firstDef = -1;
+        lastUse = -1;
+    }
+
+
+//    @Override
+//    public boolean equals(Object other) {
+//        if (other instanceof String)
+//            return other.equals(this.name);
+//        else
+//            return super.equals(other);
+//            return false;
+//        return
+//    }
+    //not needed because variables in the same function are literally the same object
+
+    static class Interval {
+        Variable variable;
+        int start;
+        int end;
+
+        Interval(Variable variable) {
+            this.variable = variable;
+            start = -1;
+            end = -1;
+        }
+
+        Interval(Variable variable, int start) {
+            this.variable = variable;
+            this.start = start;
+            this.end = -1;
+        }
+
+        public Interval(Variable variable, int firstDef, int lastUse) {
+            this.variable = variable;
+            this.start = firstDef;
+            this.end = lastUse;
+        }
+    }
+
+    void interval(int start, int end) {
+        this.interval = new Interval(this, start, end);
+        interval.start = start;
+        interval.end = end;
+    }
+
+    void interval(int start) {
+        this.interval = new Interval(this, start);
+    }
+
+    void interval() {
+        this.interval = new Interval(this, firstDef, lastUse);
+    }
+
+    Interval interval(boolean differentiate) {
+//        if (lastUse == -1)
+//            lastUse = firstDef;
+        this.interval = new Interval(this, firstDef, lastUse);
+        return interval;
+    }
+
 }

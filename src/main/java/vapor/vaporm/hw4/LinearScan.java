@@ -12,7 +12,7 @@ public class LinearScan {
 
     int time, R = 16;
 
-    void linearScan(Graph CFG) {
+    public void linearScan(Graph CFG) {
         spills = new ArrayList<>();
         registers = new Registers();
         liveIntervals = new ArrayList<>();
