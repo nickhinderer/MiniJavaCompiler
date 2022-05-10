@@ -32,18 +32,18 @@ public class SymbolTable {
     //    public int ifCounter;
 //    public int whileCounter;
     public volatile int whileCounter;
-    public int nullCounter;
-    public int andCounter;
+    public volatile int nullCounter;
+    public volatile int andCounter;
 
     public synchronized int getWhileCounter() {
         return whileCounter++;
     }
 
-    public int getAndCounter() {
+    public synchronized int getAndCounter() {
         return andCounter++;
     }
 
-    public int getNullCounter() {
+    public synchronized int getNullCounter() {
         return nullCounter++;
     }
 

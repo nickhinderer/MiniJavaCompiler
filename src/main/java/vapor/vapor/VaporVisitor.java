@@ -486,7 +486,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(AndExpression n, SymbolTable st) {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
-        int andCount = st.andCounter;
+        int andCount = st.getAndCounter();
         String[] primaryExpression1 = n.f0.accept(this, st);
         if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
