@@ -2,18 +2,24 @@ class Trick {
     public static void main(String[] args) {
         int i;
         int j;
+        int k;
         B b;
         i = 1;
         j = 100;
+        b = new B();
+
         while(0 < j) {
-            System.out.println(j);
+            //System.out.println(j);
             j = j - 1;
-            i = new B().method(i);
-            b = new B();
+            k = b.setK(j);
+//            b = new B();
+            k = b.getK();
+            System.out.println(k);
+//            k = b.method(k);
             //i = b.setK(2);
             //i = b.getK();
             //
-            System.out.println(i);
+            //System.out.println(i);
             //i = new B().getK();
         }
 
@@ -32,11 +38,12 @@ class A {
 
 
 class B extends A {
-    //public int setK(int r) {
-    //    k = r;
-    //    return 0;
-    //}
-    //public int getK() {
-    //    return k;
-   // }
+    public int setK(int r) {
+        k = r;
+        //k = this.method(r);
+        return 0;
+    }
+    public int getK() {
+        return k;
+    }
 }

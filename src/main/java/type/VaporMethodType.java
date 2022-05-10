@@ -22,8 +22,9 @@ public class VaporMethodType {
     private String name;
     private String signature;
     private String statements;
-    private final int offset;
+//    private final int offset;
     private volatile int tempCount;
+
 
 
 
@@ -32,17 +33,18 @@ public class VaporMethodType {
         statements = "";
         name = classID + ".Main";
         this.tempCount = 0;
-        offset = 0;
+//        offset = 0;
     }
 
-    public VaporMethodType(String className, String methodName, MethodType method, int offset) {
+    public VaporMethodType(String className, String methodName, MethodType method) {
         signature = createSignature(className, methodName, method);
         statements = "";
         name = className + '.' + methodName;
-        this.offset = 4 * offset;
+//        this.offset = 4 * offset;
         this.tempCount = 0;
         this.method = method;
         this.classID = className;
+        this.methodID = methodName;
     }
 
     public void setStatements(String statements) {
@@ -68,9 +70,9 @@ public class VaporMethodType {
         return "t." + tempCount++;
     }
 
-    public int getOffset() {
-        return offset;
-    }
+//    public int getOffset() {
+//        return offset;
+//    }
 
     public String statements() {
         return statements;

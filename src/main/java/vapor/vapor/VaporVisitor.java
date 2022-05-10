@@ -1,5 +1,7 @@
 package vapor.vapor;
 
+import symboltable.Environment;
+import symboltable.Symbol;
 import symboltable.SymbolTable;
 import type.VaporClassType;
 import typecheck.TypeCheckVisitor;
@@ -695,7 +697,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             argsSetup = argsSetupB.toString();
             argsList = argsListB.toString();
         }
-        int methodOffset = st.typeM(type.classID(), n.f2.f0.tokenImage).vapor.getOffset();
+        ClassType c = st.table.classes.get(Symbol.symbol(type.classID()));
+        VaporClassType vm = c.vapor;
+                int methodOffset  = vm.getMethodOffset(n.f2.f0.tokenImage);
+//        int methodOffset = st.typeM(type.classID(), n.f2.f0.tokenImage).vapor.getOffset();
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String methodSetup = temporary + " = [" + primaryExpression[0] + "]\n" +
                 temporary + " = [" + temporary + "+" + methodOffset + "]\n";

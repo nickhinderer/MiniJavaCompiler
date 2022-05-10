@@ -33,6 +33,16 @@ public class VaporClassType {
         return size;
     }
 
+    public int getMethodOffset(String method) {
+        int index = 0;
+        for (VaporMethodType m : methods) {
+            if (m.methodID.equals(method))
+                return 4 * index;
+            index++;
+        }
+        return 4 * methods.indexOf(method);
+    }
+
     public VaporClassType(ClassType classType, SymbolTable symbolTable) {
         //create the vmt and do all that.
 
@@ -46,7 +56,7 @@ public class VaporClassType {
         Map<Symbol, MethodType> classMethods = classType.getMethods();
         int offset = 0;
         for (Symbol id : classType.getMethodsOrder()) {
-            VaporMethodType method = new VaporMethodType(classMethods.get(id).classID, id.toString(), classMethods.get(id), offset++);
+            VaporMethodType method = new VaporMethodType(classMethods.get(id).classID, id.toString(), classMethods.get(id));
             methods.add(method);
             classType.getMethodType(id.toString()).vapor = method;
         }

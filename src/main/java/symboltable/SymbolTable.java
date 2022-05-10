@@ -29,7 +29,7 @@ public class SymbolTable {
     }
 
     public volatile int ifCounter;
-//    public int ifCounter;
+    //    public int ifCounter;
 //    public int whileCounter;
     public volatile int whileCounter;
     public int nullCounter;
@@ -379,8 +379,17 @@ public class SymbolTable {
         if (classType.isMain())
             return;
         classType.getMethods().forEach((methodID, methodType) -> {
-            if (!methodType.vapor.classID.equals(classType.classID()))
-                this.printMethod(methodID, methodType);
+                    if (!methodType.vapor.classID.equals(classType.classID())) {
+                        this.printMethod(methodID, methodType);
+                    } else {
+                        if (classType.hasParent()) {
+                            ClassType parent = this.typeC(classType.parentName());
+                            if (!parent.getMethods().containsValue(methodType)) {
+                                this.printMethod(methodID, methodType);
+                            }
+                        }
+
+                    }
                 }
 //                    if (methodType.vapor.statements().equals("")) {
 //                        if (classType.hasParent()) {
