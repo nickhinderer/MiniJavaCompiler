@@ -14,13 +14,23 @@ public class MethodType extends Type {
     private Map<Symbol, Type> variables;
     private Type returnType;
     public VaporMethodType vapor;
+    public String classID;
 
-    public MethodType(Type returnType) {
+
+    public MethodType(MethodType other) {
+        this.parameters = new HashMap<>(other.parameters);
+        this.returnType = other.returnType;
+        this.order = new ArrayList<>(other.order);
+        this.variables = new HashMap<>(other.variables);
+        this.type = TYPE.METHOD;
+    }
+    public MethodType(Type returnType, String currentClass) {
         this.returnType = returnType;
         parameters = new HashMap<>();
         order = new ArrayList<>();
         variables = new HashMap<>();
         this.type = TYPE.METHOD;
+        this.classID = currentClass;
     }
 
     public List<Symbol> getOrder() {

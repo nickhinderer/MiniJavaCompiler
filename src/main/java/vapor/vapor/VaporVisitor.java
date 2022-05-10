@@ -26,7 +26,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     }
 
     public void initialize() {
-        symbolTable.classes().forEach(VaporClassType::create);
+        symbolTable.classes().forEach((classID, classType) -> {
+            VaporClassType.create(classID, classType, symbolTable);
+        });
+//        symbolTable.classes().forEach(VaporClassType::create);
 //        Map<Symbol, VaporClassType> classes = new HashMap<>();
 //        for (var entry : symbolTable.classes().entrySet())
 //            classes.put(entry.getKey(), VaporClassType.create(entry.getValue())); //new VaporClassType(entry.getValue(), false));

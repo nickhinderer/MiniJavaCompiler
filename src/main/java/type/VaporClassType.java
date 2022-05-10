@@ -1,6 +1,7 @@
 package type;
 
 import symboltable.Symbol;
+import symboltable.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +20,9 @@ public class VaporClassType {
         classType.vapor = this;
     }
 
-    public static void create(Symbol symbol, ClassType classType) {
+    public static void create(Symbol symbol, ClassType classType, SymbolTable symbolTable) {
         if (classType.isMain()) new VaporClassType(classType, true);
-        else new VaporClassType(classType);
+        else new VaporClassType(classType, symbolTable);
     }
 
     public String vmt() {
@@ -32,8 +33,11 @@ public class VaporClassType {
         return size;
     }
 
-    public VaporClassType(ClassType classType) {
+    public VaporClassType(ClassType classType, SymbolTable symbolTable) {
         //create the vmt and do all that.
+
+//        classType = symbolTable.getFullClassType(classType.classID());
+
         classType.getMethodCount(); //wait nvm this is useless. vmt is always 4 bytes
         methods = new ArrayList<>();
         fieldOffsets = new HashMap<>();
@@ -42,7 +46,7 @@ public class VaporClassType {
         Map<Symbol, MethodType> classMethods = classType.getMethods();
         int offset = 0;
         for (Symbol id : classType.getMethodsOrder()) {
-            VaporMethodType method = new VaporMethodType(classType.classID(), id.toString(), classMethods.get(id), offset++);
+            VaporMethodType method = new VaporMethodType(classMethods.get(id).classID, id.toString(), classMethods.get(id), offset++);
             methods.add(method);
             classType.getMethodType(id.toString()).vapor = method;
         }

@@ -19,6 +19,7 @@ public class SymTab {
 //            Type t = sv.getSymbolTable().getFullClassType("Fac");
             System.out.println();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Error");
         }
     }

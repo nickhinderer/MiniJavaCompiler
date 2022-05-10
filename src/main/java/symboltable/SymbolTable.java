@@ -378,7 +378,27 @@ public class SymbolTable {
     private void printMethods(Symbol symbol, ClassType classType) {
         if (classType.isMain())
             return;
-        classType.getMethods().forEach(this::printMethod);
+        classType.getMethods().forEach((methodID, methodType) -> {
+            if (!methodType.vapor.classID.equals(classType.classID()))
+                this.printMethod(methodID, methodType);
+                }
+//                    if (methodType.vapor.statements().equals("")) {
+//                        if (classType.hasParent()) {
+//                            ClassType parent = this.typeC(classType.parentName()    );
+//                            while (!parent.getMethodType(methodID.toString()).vapor.statements().equals("")) {
+//                                if (parent.hasParent()) {
+//                                    parent = this.typeC(parent.parentName())    ;
+//                                } else {
+//                                    break;
+//                                }
+//                            }
+//                            methodType.vapor.setStatements(parent.getMethodType(methodID.toString()).vapor.statements());
+//                        }
+//                    }
+//                    this.printMethod(methodID, methodType);
+//                }
+
+        );
     }
 
     private void printMethod(Symbol symbol, MethodType methodType) {

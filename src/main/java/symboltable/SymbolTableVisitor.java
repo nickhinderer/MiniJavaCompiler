@@ -57,7 +57,7 @@ public class SymbolTableVisitor<R, A> extends GJDepthFirst<R, A> {
         currentClass = className;
         String methodName = "main";
         Type returnType = new PrimitiveType("void");
-        MethodType methodType = new MethodType(returnType);
+        MethodType methodType = new MethodType(returnType, className);
         if (!symbolTable.addMethod(currentClass, methodName, methodType))
             throw new TypeCheckException("Redefinition of of method '" + methodName + "' in class '" + currentClass + "'");
         currentMethod = methodName;
@@ -100,7 +100,7 @@ public class SymbolTableVisitor<R, A> extends GJDepthFirst<R, A> {
     public R visit(MethodDeclaration n, A argu) {
         String methodName = n.f2.f0.tokenImage;
         Type returnType = getType(n.f1.f0);
-        MethodType methodType = new MethodType(returnType);
+        MethodType methodType = new MethodType(returnType, currentClass);
         if (!symbolTable.addMethod(currentClass, methodName, methodType))
             throw new TypeCheckException("Redefinition of of method '" + methodName + "' in class '" + currentClass + "'");
         currentMethod = methodName;

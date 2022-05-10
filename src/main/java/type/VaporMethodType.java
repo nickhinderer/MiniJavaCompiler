@@ -4,11 +4,27 @@ import type.MethodType;
 import symboltable.Symbol;
 
 public class VaporMethodType {
+    public String classID;
+    String methodID;
+    MethodType method;
+    @Override
+    public String toString() {
+        return classID + '.' + methodID;
+    }
+    public void inherit(String classID, String methodID) {
+        this.classID = classID;
+        this.methodID = methodID;
+        this.name = classID + '.' + methodID;
+        this.signature = createSignature(classID, methodID, method);
+//        this.offset = ?;
+    }
+
     private String name;
     private String signature;
     private String statements;
     private final int offset;
     private volatile int tempCount;
+
 
 
     public VaporMethodType(String classID) {
@@ -25,6 +41,8 @@ public class VaporMethodType {
         name = className + '.' + methodName;
         this.offset = 4 * offset;
         this.tempCount = 0;
+        this.method = method;
+        this.classID = className;
     }
 
     public void setStatements(String statements) {

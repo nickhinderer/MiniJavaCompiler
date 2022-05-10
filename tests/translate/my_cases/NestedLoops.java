@@ -55,7 +55,7 @@ class NestedLoops {
         t = new T();
         z = t.method(6);
         z = t.method(6);
-        z = t.method(6);
+        z = new T().method(6);
         z = t.method(6);
         z = t.method(6);
         z = t.method(6);
