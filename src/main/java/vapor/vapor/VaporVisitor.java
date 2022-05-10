@@ -133,10 +133,15 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      * f17 -> "}"
      */
     public String[] visit(MainClass n, SymbolTable st) {
+        st.state.classID = n.f1.f0.tokenImage;
+        st.state.methodID = "main";
         String[] statements = n.f15.accept(this, st);
-        statements[0] += "\nret";
+        statements[statements.length-1] += "\nret";
+        StringBuilder combinedStatements = new StringBuilder();
+        for (String statement : statements)
+            combinedStatements.append(removeEmptyLines(statement));
         String classID = n.f1.f0.tokenImage;
-        st.typeM(classID, "main").vapor.setStatements(statements[0]);
+        st.typeM(classID, "main").vapor.setStatements(combinedStatements.toString());
         return null;
     }
 
@@ -212,10 +217,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
                 methodStatements.append(removeEmptyLines(statement));
             }
         String[] returnExpression = n.f10.accept(this, st);
-        if (naked(returnExpression))
+        if (needsTemp(returnExpression))
             returnExpression = wrap(returnExpression, st);
-        methodStatements.append(returnExpression[1]).append('\n').append("ret ").append(returnExpression[0]);
-        st.typeM(st.state.classID, st.state.methodID).vapor.setStatements(methodStatements.toString());
+        methodStatements.append(returnExpression[1]).append("ret ").append(returnExpression[0]);
+        st.typeM(st.state.classID, st.state.methodID).vapor.setStatements(removeEmptyLines(methodStatements.toString()));
         return new String[]{"", ""};
     }
 
@@ -348,7 +353,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] _ret = null;
         String[] identifier = n.f0.accept(this, st);
         String[] expression = n.f2.accept(this, st);
-        if (naked(expression))
+        if (needsTemp(expression))
             expression = wrap(expression, st);
         String assignment = identifier[0] + " = " + expression[0] + "\n";
         String[] ret = new String[]{assignment, identifier[1] + "\n" + expression[1]};
@@ -369,7 +374,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] _ret = null;
         String[] array = n.f0.accept(this, st);
         String[] index = n.f2.accept(this, st);
-        if (naked(index))
+        if (needsTemp(index))
             index = wrap(index, st);
         String temporary1 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String temporary2 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
@@ -381,7 +386,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String element = "[" + temporary2 + "+4]";
 
         String[] value = n.f5.accept(this, st);
-        if (naked(value))
+        if (needsTemp(value))
             value = wrap(value, st);
 
         String assignment = elementSetup + "\n" + value[1] + "\n" + element + " = " + value[0] + "\n";
@@ -400,7 +405,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     public String[] visit(IfStatement n, SymbolTable st) {
         String[] _ret = null;
         String[] condition = n.f2.accept(this, st);
-        if (naked(condition)) {
+        if (needsTemp(condition)) {
             condition = wrap(condition, st);
         }
         int ifCount = st.getIfCounter();
@@ -426,7 +431,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] _ret = null;
 
         String[] expression = n.f2.accept(this, st);
-        if (naked(expression))
+        if (needsTemp(expression))
             expression = wrap(expression, st);
         int whileCount = st.getWhileCounter();
         String[] body = n.f4.accept(this, st);
@@ -448,7 +453,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(PrintStatement n, SymbolTable st) {
         String[] expression = n.f2.accept(this, st);
-        if (naked(expression))
+        if (needsTemp(expression))
             expression = wrap(expression, st);
         String print = "PrintIntS(" + expression[0] + ")\n";
         return new String[]{print, expression[1]};
@@ -478,10 +483,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         int andCount = st.andCounter;
         String[] primaryExpression1 = n.f0.accept(this, st);
-        if (naked(primaryExpression1))
+        if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
         String[] primaryExpression2 = n.f2.accept(this, st);
-        if (naked(primaryExpression2))
+        if (needsTemp(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
         String and = temporary + " = 0\n" +
                 "if0 " + primaryExpression1[0] + " goto :and" + andCount + "_end\n" +
@@ -499,10 +504,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
     public String[] visit(CompareExpression n, SymbolTable st) {
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String[] primaryExpression1 = n.f0.accept(this, st);
-        if (naked(primaryExpression1))
+        if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
         String[] primaryExpression2 = n.f2.accept(this, st);
-        if (naked(primaryExpression2))
+        if (needsTemp(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
         String compare = "LtS(" + primaryExpression1[0] + " " + primaryExpression2[0] + ")\n";
         return new String[]{compare, primaryExpression1[1] + "\n" + primaryExpression2[1] + "\n"};
@@ -515,10 +520,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(PlusExpression n, SymbolTable st) {
         String[] primaryExpression1 = n.f0.accept(this, st);
-        if (naked(primaryExpression1))
+        if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
         String[] primaryExpression2 = n.f2.accept(this, st);
-        if (naked(primaryExpression2))
+        if (needsTemp(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
         String plus = "Add(" + primaryExpression1[0] + " " + primaryExpression2[0] + ")\n";
         return new String[]{plus, primaryExpression1[1] + "\n" + primaryExpression2[1]};
@@ -531,10 +536,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(MinusExpression n, SymbolTable st) {
         String[] primaryExpression1 = n.f0.accept(this, st);
-        if (naked(primaryExpression1))
+        if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
         String[] primaryExpression2 = n.f2.accept(this, st);
-        if (naked(primaryExpression2))
+        if (needsTemp(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
         String plus = "Sub(" + primaryExpression1[0] + " " + primaryExpression2[0] + ")\n";
         return new String[]{plus, primaryExpression1[1] + "\n" + primaryExpression2[1]};
@@ -547,10 +552,10 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(TimesExpression n, SymbolTable st) {
         String[] primaryExpression1 = n.f0.accept(this, st);
-        if (naked(primaryExpression1))
+        if (needsTemp(primaryExpression1))
             primaryExpression1 = wrap(primaryExpression1, st);
         String[] primaryExpression2 = n.f2.accept(this, st);
-        if (naked(primaryExpression2))
+        if (needsTemp(primaryExpression2))
             primaryExpression2 = wrap(primaryExpression2, st);
         String plus = "MulS(" + primaryExpression1[0] + " " + primaryExpression2[0] + ")\n";
         return new String[]{plus, primaryExpression1[1] + "\n" + primaryExpression2[1]};
@@ -566,7 +571,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] _ret = null;
         String[] array = n.f0.accept(this, st);
         String[] index = n.f2.accept(this, st);
-        if (naked(index))
+        if (needsTemp(index))
             index = wrap(index, st);
         String temporary1 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         String temporary2 = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
@@ -598,7 +603,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(MessageSend n, SymbolTable st) {
         String[] primaryExpression = n.f0.accept(this, st);
-        if (naked(primaryExpression)) {
+        if (needsTemp(primaryExpression)) {
             primaryExpression = wrap(primaryExpression, st);
         }
         String argsSetup = "";
@@ -679,7 +684,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
             StringBuilder argsListB = new StringBuilder();
             for (Expression e : args) {
                 String[] stmts = e.accept(this, st);
-                if (naked(stmts))
+                if (needsTemp(stmts))
                     stmts = wrap(stmts, st);
                 argsSetupB.append(stmts[1]).append("\n");
                 argsListB.append(' ').append(stmts[0]);
@@ -782,7 +787,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
      */
     public String[] visit(ArrayAllocationExpression n, SymbolTable st) {
         String[] size = n.f3.accept(this, st);
-        if (naked(size)) {
+        if (needsTemp(size)) {
             size = wrap(size, st);
         }
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
@@ -813,7 +818,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         String[] expression = n.f1.accept(this, st);
         String temporary = st.typeM(st.state.classID, st.state.methodID).vapor.getTemp();
         int ifCount = st.getIfCounter();
-        if (naked(expression)) {
+        if (needsTemp(expression)) {
             expression = wrap(expression, st);
         }
         String not = temporary + " = 1\n" +
@@ -849,13 +854,11 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
         return new String[]{temporary, expression[1] + "\n" + bind};
     }
 
-    public static boolean naked(String[] expression) {
+    public static boolean needsTemp(String[] expression) {
         if (expression[0].charAt(0) == '[' && expression[0].charAt(expression[0].length() - 1) == ']')
             return true;
         if (expression[0].contains("call "))
             return true;
-        if (expression[0].contains("LtS(") || expression[0].contains("MulS(") || expression[0].contains("Sub(") || expression[0].contains("Add("))
-            return true;
-        return false;
+        return expression[0].contains("LtS(") || expression[0].contains("MulS(") || expression[0].contains("Sub(") || expression[0].contains("Add(");
     }
 }

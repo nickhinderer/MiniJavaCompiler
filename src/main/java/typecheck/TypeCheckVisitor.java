@@ -349,8 +349,9 @@ public class TypeCheckVisitor extends GJDepthFirst<Type, SymbolTable> {
         if ( n.present() ) {
             int _count=0;
             for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-                if (e.nextElement().accept(this, st) == null)
+                if (e.nextElement().accept(this, st) == null) {
                     checks = null;
+                }
                 _count++;
             }
             return checks;

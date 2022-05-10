@@ -29,6 +29,8 @@ public class SymbolTable {
     }
 
     public volatile int ifCounter;
+//    public int ifCounter;
+//    public int whileCounter;
     public volatile int whileCounter;
     public int nullCounter;
     public int andCounter;
@@ -381,7 +383,11 @@ public class SymbolTable {
 
     private void printMethod(Symbol symbol, MethodType methodType) {
         System.out.println(methodType.vapor.getSignature());
-        System.out.println(methodType.vapor.statements());
+        methodType.vapor.statements().lines().forEach((line) -> {
+            System.out.println("  " + line);
+        });
+        //methodType.vapor.statements().lines().forEach(System.out::println);
+        System.out.println();
     }
 
     private void printVMT(Symbol symbol, ClassType classType) {
