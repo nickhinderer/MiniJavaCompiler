@@ -108,7 +108,7 @@ public class VaporVisitor extends GJDepthFirst<String[], SymbolTable> {
 //                    System.out.println(method.getValue().vapor.statements());
 //                }
 //        }
-        st.printVapor();
+            st.printVapor();
         return _ret;
     }
 
